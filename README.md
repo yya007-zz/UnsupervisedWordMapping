@@ -1,9 +1,9 @@
 # UnsupervisedWordMapping
 Facebook recently open-sourced word vectors in [89 languages](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
 
-### Installing Required Package
+## Installing Required Package
 
-## Requirements
+### Requirements
 
 For Mac OS and Linux User.
 Since it uses C++11 features, it requires a compiler with good C++11 support.
@@ -16,8 +16,9 @@ For the word-similarity evaluation script you will need:
 
 * python 2.6 or newer
 * numpy & scipy
+* tensorflow 1.1 or newer
 
-## Building fastText
+### Building fastText
 
 In order to build `fastText`, use the following:
 

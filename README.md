@@ -27,8 +27,22 @@ $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
 $ make
 ```
-
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+
+### Multi-threaded GIZA++
+
+```
+git clone https://github.com/moses-smt/mgiza.git
+cd mgiza/mgizapp
+cmake .
+make
+make install
+export BINDIR=~/workspace/bin/training-tools
+cp bin/* $BINDIR/mgizapp
+cp scripts/merge_alignment.py $BINDIR
+```
+
+## Dataset Preparation
 
 

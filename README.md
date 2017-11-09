@@ -1,4 +1,4 @@
-# UnsupervisedWordMapping
+# Unsupervised Word Mapping
 Facebook recently open-sourced word vectors in [89 languages](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
 
 ## Installing Required Package

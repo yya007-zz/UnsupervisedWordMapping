@@ -1,6 +1,6 @@
 from fasttext import FastVector
 import numpy as np
-from cyclegan.main import CycleGAN
+from cyclegan-text.CycleGAN import *
 
 
 def word2vector(wordlist,dictionary):

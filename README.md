@@ -55,6 +55,7 @@ python prepare_data.py
 ```
 
 ## Reference
+* https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md
 * https://github.com/leehomyc/cyclegan-1
 * https://github.com/artetxem/vecmap
 * https://github.com/Babylonpartners/fastText_multilingual

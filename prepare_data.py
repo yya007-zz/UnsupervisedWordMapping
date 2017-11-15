@@ -50,8 +50,8 @@ def createTrainAndTest():
 	np.save("./data/en_it_test.npy",np.array(res))
 	
 def encodingFiles():
-	en_dictionary = FastVector(vector_file="../UnsupervisedWordMappingDataset/wiki.en/wiki.en.vec")
-	it_dictionary = FastVector(vector_file="../UnsupervisedWordMappingDataset/wiki.it/wiki.it.vec")
+	en_dictionary = FastVector(vector_file="./data/pretrained/en.vec")
+	it_dictionary = FastVector(vector_file="./data/pretrained/it.vec")
 	
 	file="./data/en"
 	array=np.load(file+".npy")

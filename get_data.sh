@@ -23,7 +23,7 @@ mkdir -p "$DATA/dictionaries"
 mkdir -p "$DATA/embeddings/original"
 mkdir -p "$DATA/embeddings/unit"
 mkdir -p "$DATA/embeddings/unit-center"
-
+mkdir -p "$DATA/pretrained"
 # Download English-Italian data from Dinu et al. (2015)
 wget -q http://clic.cimec.unitn.it/~georgiana.dinu/down/resources/transmat.zip -O "$DATA/transmat.zip"
 unzip -p "$DATA/transmat.zip" data/EN.200K.cbow1_wind5_hs0_neg10_size300_smpl1e-05.txt > "$DATA/embeddings/original/en.emb.txt"
@@ -32,6 +32,8 @@ unzip -p "$DATA/transmat.zip" data/OPUS_en_it_europarl_train_5K.txt > "$DATA/dic
 unzip -p "$DATA/transmat.zip" data/OPUS_en_it_europarl_test.txt > "$DATA/dictionaries/en-it.test.txt"
 rm -f "$DATA/transmat.zip"
 
+wget -q https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.vec -O "$DATA/pretrained/en.vec"
+wget -q https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.vec -O "$DATA/pretrained/it.vec"
 # # Download word analogy data from Mikolov et al. (2013)
 # wget -q https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/word2vec/source-archive.zip -O "$DATA/word2vec.zip"
 # unzip -p "$DATA/word2vec.zip" word2vec/trunk/questions-words.txt > "$DATA/analogies/questions-words.txt"

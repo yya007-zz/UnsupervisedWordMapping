@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from . import layers
 
-WORD_EMBED_DIM=100
+WORD_EMBED_DIM=300
 
 # The number of samples per batch.
 BATCH_SIZE = 1

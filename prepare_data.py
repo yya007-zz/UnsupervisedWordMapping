@@ -2,6 +2,7 @@ from fasttext import FastVector
 import numpy as np
 
 def word2vector(wordlist,dictionary):
+	reslist=[]
 	for word in wordlist:
 		if word in dictionary:
 			reslist.append(dictionary[word])

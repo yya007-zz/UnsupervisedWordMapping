@@ -390,9 +390,10 @@ class CycleGAN:
             coord.request_stop()
             coord.join(threads)
 
-def run_cyclegan(to_train, log_dir, config_filename, checkpoint_dir, skip):
+def run_cyclegan(to_train, log_dir, config_filename, checkpoint_dir, skip=False):
     """
-    :param to_train: Specify whether it is training or testing. 
+    :param 
+    to_train: Specify whether it is training or testing. 
     0: testing
     1: training; 
     2: resuming from latest checkpoint; 

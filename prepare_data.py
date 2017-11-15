@@ -17,7 +17,7 @@ def getTheFrequency():
 		word=line.split()[0]
 		res.append(word)
 	f.close()
-	np.save("./data/en_200K.npy",np.array(res))
+	np.save("./data/en.npy",np.array(res))
 
 	address="./data/embeddings/original/it.emb.txt"
 	f = open(address,'r')
@@ -26,7 +26,7 @@ def getTheFrequency():
 		word=line.split()[0]
 		res.append(word)
 	f.close()
-	np.save("./data/it_200K.npy",np.array(res))
+	np.save("./data/it.npy",np.array(res))
 
 def createTrainAndTest():
 	address="./data//dictionaries/en-it.train.txt"
@@ -87,7 +87,6 @@ def encodingFiles():
 	del it_dictionary
 
 def main():
-	preparation()
 	getTheFrequency()
 	createTrainAndTest()	
 	encodingFiles();

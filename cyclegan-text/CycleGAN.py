@@ -4,7 +4,6 @@ import json
 import numpy as np
 import os
 import random
-from scipy.misc import imsave
 
 import click
 import tensorflow as tf
@@ -25,7 +24,6 @@ class CycleGAN:
         current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         self._pool_size = pool_size
-        self._size_before_crop = 286
         self._lambda_a = lambda_a
         self._lambda_b = lambda_b
         self._output_dir = os.path.join(output_root_dir, current_time)
@@ -37,16 +35,13 @@ class CycleGAN:
         self._network_version = network_version
         self._dataset_name = dataset_name
         self._checkpoint_dir = checkpoint_dir
-        self._do_flipping = do_flipping
         self._skip = skip
 
         self.fake_word_A = np.zeros(
-            (self._pool_size, 1, model.IMG_HEIGHT, model.IMG_WIDTH,
-             model.IMG_CHANNELS)
+            (self._pool_size, 1, model.WORD_EMBED_DIM)
         )
         self.fake_word_B = np.zeros(
-            (self._pool_size, 1, model.IMG_HEIGHT, model.IMG_WIDTH,
-             model.IMG_CHANNELS)
+            (self._pool_size, 1, model.WORD_EMBED_DIM)
         )
 
     def model_setup(self):
@@ -64,31 +59,23 @@ class CycleGAN:
         self.input_a = tf.placeholder(
             tf.float32, [
                 1,
-                model.WORD_EMBED_DIM,
-                1,
-                1
+                model.WORD_EMBED_DIM
             ], name="input_A")
         self.input_b = tf.placeholder(
             tf.float32, [
                 1,
-                model.WORD_EMBED_DIM,
-                1,
-                1
+                model.WORD_EMBED_DIM
             ], name="input_B")
 
         self.fake_pool_A = tf.placeholder(
             tf.float32, [
                 None,
-                model.WORD_EMBED_DIM,
-                1,
-                1
+                model.WORD_EMBED_DIM
             ], name="fake_pool_A")
         self.fake_pool_B = tf.placeholder(
             tf.float32, [
                 None,
-                model.WORD_EMBED_DIM,
-                1,
-                1
+                model.WORD_EMBED_DIM
             ], name="fake_pool_B")
 
         self.global_step = slim.get_or_create_global_step()
@@ -179,7 +166,7 @@ class CycleGAN:
         self.d_A_loss_summ = tf.summary.scalar("d_A_loss", d_loss_A)
         self.d_B_loss_summ = tf.summary.scalar("d_B_loss", d_loss_B)
 
-    def fake_image_pool(self, num_fakes, fake, fake_pool):
+    def fake_word_pool(self, num_fakes, fake, fake_pool):
         """
         This function saves the generated image to corresponding
         pool of word.
@@ -200,41 +187,41 @@ class CycleGAN:
             else:
                 return fake
     
-    def save_word(self, sess, epoch):
-        """
-        Saves input and output word.
+    # def save_word(self, sess, epoch):
+    #     """
+    #     Saves input and output word.
 
-        :param sess: The session.
-        :param epoch: Currnt epoch.
-        """
+    #     :param sess: The session.
+    #     :param epoch: Currnt epoch.
+    #     """
 
-        if not os.path.exists(self._word_dir):
-            os.makedirs(self._word_dir)
+    #     if not os.path.exists(self._word_dir):
+    #         os.makedirs(self._word_dir)
 
-        names = ['inputA_', 'inputB_', 'fakeA_',
-                 'fakeB_', 'cycA_', 'cycB_']
+    #     names = ['inputA_', 'inputB_', 'fakeA_',
+    #              'fakeB_', 'cycA_', 'cycB_']
 
-       for i in range(0, self._num_imgs_to_save):
-            print("Saving image {}/{}".format(i, self._num_imgs_to_save))
-            inputs = sess.run(self.inputs)
-            fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp = sess.run([
-                self.fake_word_a,
-                self.fake_word_b,
-                self.cycle_word_a,
-                self.cycle_word_b
-            ], feed_dict={
-                self.input_a: inputs['word_i'],
-                self.input_b: inputs['word_j']
-            })
+    #    for i in range(0, self._num_imgs_to_save):
+    #         print("Saving image {}/{}".format(i, self._num_imgs_to_save))
+    #         inputs = sess.run(self.inputs)
+    #         fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp = sess.run([
+    #             self.fake_word_a,
+    #             self.fake_word_b,
+    #             self.cycle_word_a,
+    #             self.cycle_word_b
+    #         ], feed_dict={
+    #             self.input_a: inputs['word_i'],
+    #             self.input_b: inputs['word_j']
+    #         })
 
-            tensors = [inputs['word_i'], inputs['word_j'],
-                       fake_B_temp, fake_A_temp, cyc_A_temp, cyc_B_temp]
+    #         tensors = [inputs['word_i'], inputs['word_j'],
+    #                    fake_B_temp, fake_A_temp, cyc_A_temp, cyc_B_temp]
 
-            for name, tensor in zip(names, tensors):
-                image_name = name + str(epoch) + "_" + str(i) + ".jpg"
-                imsave(os.path.join(self._word_dir, image_name),
-                       ((tensor[0] + 1) * 127.5).astype(np.uint8)
-                       )
+    #         for name, tensor in zip(names, tensors):
+    #             image_name = name + str(epoch) + "_" + str(i) + ".jpg"
+    #             imsave(os.path.join(self._word_dir, image_name),
+    #                    ((tensor[0] + 1) * 127.5).astype(np.uint8)
+    #                    )
 
     def train(self):
         """Training Function."""
@@ -283,7 +270,7 @@ class CycleGAN:
                     curr_lr = self._base_lr - \
                         self._base_lr * (epoch - 100) / 100
 
-                self.save_word(sess, epoch)
+                # self.save_word(sess, epoch)
 
                 for i in range(0, max_word):
                     print("Processing batch {}/{}".format(i, max_word))
@@ -305,7 +292,7 @@ class CycleGAN:
                     )
                     writer.add_summary(summary_str, epoch * max_word + i)
 
-                    fake_B_temp1 = self.fake_image_pool(
+                    fake_B_temp1 = self.fake_word_pool(
                         self.num_fake_inputs, fake_B_temp, self.fake_word_B)
 
                     # Optimizing the D_B network
@@ -337,7 +324,7 @@ class CycleGAN:
                     )
                     writer.add_summary(summary_str, epoch * max_word + i)
 
-                    fake_A_temp1 = self.fake_image_pool(
+                    fake_A_temp1 = self.fake_word_pool(
                         self.num_fake_inputs, fake_A_temp, self.fake_word_A)
 
                     # Optimizing the D_A network
@@ -385,7 +372,7 @@ class CycleGAN:
             self._num_imgs_to_save = cyclegan_datasets.DATASET_TO_SIZES[
                 self._dataset_name]
 
-            self.save_word(sess, 0)
+            # self.save_word(sess, 0)
 
             coord.request_stop()
             coord.join(threads)

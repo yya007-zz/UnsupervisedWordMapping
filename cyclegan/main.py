@@ -1,4 +1,4 @@
-x`"""Code for training CycleGAN."""
+"""Code for training CycleGAN."""
 from datetime import datetime
 import json
 import numpy as np

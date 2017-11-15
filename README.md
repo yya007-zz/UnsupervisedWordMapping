@@ -44,5 +44,19 @@ cp scripts/merge_alignment.py $BINDIR
 ```
 
 ## Dataset Preparation
+```
+git clone
+https://github.com/yya007/UnsupervisedWordMapping.git
+cd UnsupervisedWordMapping
+./get_data.sh
+python prepare_data.py
+```
+## usage
+
+## Reference
+https://github.com/leehomyc/cyclegan-1
+https://github.com/artetxem/vecmap
+https://github.com/Babylonpartners/fastText_multilingual
+https://github.com/moses-smt/mgiza.git
 
 

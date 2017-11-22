@@ -1,13 +1,27 @@
 from fasttext import FastVector
 import numpy as np
 
-def word2vector(wordlist,dictionary):
+def word2vector_mo(wordlist,dictionary):
 	reslist=[]
 	for word in wordlist:
 		if word in dictionary:
 			reslist.append(dictionary[word])
 		else:
-			reslist.append(np.zeros([300]))
+			pass
+			# reslist.append(np.zeros([300]))
+	return np.array(reslist)
+
+def word2vector_bi(wl1,wl2,dict1,dict2):
+	reslist=[]
+	assert wl1.shape[0]==wl2.shape[0]
+	for i in range(wl1.shape[0]):
+		w1=wl1[i]
+		w2=wl2[i]
+		if w1 in dict1 and w2 in dict2:
+			reslist.append([dict1[w1],dict2[w2]])
+		else:
+			pass
+			# reslist.append(np.zeros([300]))
 	return np.array(reslist)
 
 def getTheFrequency():
@@ -30,7 +44,7 @@ def getTheFrequency():
 	np.save("./data/it.npy",np.array(res))
 
 def createTrainAndTest():
-	address="./data//dictionaries/en-it.train.txt"
+	address="./data/dictionaries/en-it.train.txt"
 	f = open(address,'r')
 	res=[]
 	for line in f.readlines():
@@ -47,50 +61,48 @@ def createTrainAndTest():
 		word=line.split()
 		res.append(word)
 	f.close()
-
 	np.save("./data/en_it_test.npy",np.array(res))
 	
-def encodingFiles():
+def encodingFiles_mo():
 	en_dictionary = FastVector(vector_file="./data/pretrained/en.vec")
 	it_dictionary = FastVector(vector_file="./data/pretrained/it.vec")
 	
 	file="./data/en"
 	array=np.load(file+".npy")
-	vec=word2vector(array,en_dictionary)
+	vec=word2vector_mo(array,en_dictionary)
 	np.save(file+'_vec.npy',vec)
 	print vec.shape
 
 	file="./data/it"
 	array=np.load(file+".npy")
-	vec=word2vector(array,it_dictionary)
+	vec=word2vector_mo(array,it_dictionary)
 	np.save(file+'_vec.npy',vec)
 	print vec.shape
 
+def encodingFiles_bi():
+	en_dictionary = FastVector(vector_file="./data/pretrained/en.vec")
+	it_dictionary = FastVector(vector_file="./data/pretrained/it.vec")
+
 	file="./data/en_it_train"
 	array=np.load(file+".npy")
-	vec=word2vector(array[:,0],en_dictionary)
-	print vec.shape
-	np.save(file+'_en_vec.npy',vec)
-	vec=word2vector(array[:,1],it_dictionary)
-	np.save(file+'_it_vec.npy',vec)
+	vec=word2vector_bi(array[:,0],array[:,1],en_dictionary,it_dictionary)
+	np.save(file+'_vec.npy',vec)
 	print vec.shape
 
 	file="./data/en_it_test"
 	array=np.load(file+".npy")
-	vec=word2vector(array[:,0],en_dictionary)
-	print vec.shape
-	np.save(file+'_en_vec.npy',vec)
-	vec=word2vector(array[:,1],it_dictionary)
-	np.save(file+'_it_vec.npy',vec)
+	vec=word2vector_bi(array[:,0],array[:,1],en_dictionary,it_dictionary)
+	np.save(file+'_vec.npy',vec)
 	print vec.shape
 
 	del en_dictionary
 	del it_dictionary
 
 def main():
-	getTheFrequency()
-	createTrainAndTest()	
-	encodingFiles();
+	# getTheFrequency()
+	# createTrainAndTest()	
+	# encodingFiles_mo()
+	encodingFiles_bi()
 
 
 	# en=["hello","hello","hello","hello","hello"]

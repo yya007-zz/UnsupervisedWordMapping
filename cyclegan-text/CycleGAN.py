@@ -17,12 +17,14 @@ slim = tf.contrib.slim
 class CycleGAN:
     """The CycleGAN module."""
 
-    def __init__(self, pool_size, lambda_a,
+    def __init__(self, do_train, do_test, pool_size, lambda_a,
                  lambda_b, output_root_dir, to_restore,
                  base_lr, max_step, network_version,
                  dataset_name, checkpoint_dir, do_flipping, skip):
         current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
 
+        self._do_train=do_train
+        self._do_test=_do_test
         self._pool_size = pool_size
         self._lambda_a = lambda_a
         self._lambda_b = lambda_b
@@ -33,7 +35,8 @@ class CycleGAN:
         self._base_lr = base_lr
         self._max_step = max_step
         self._network_version = network_version
-        self._dataset_name = dataset_name
+        self._train_dataset_name = train_dataset_name
+        self._test_dataset_name = test_dataset_name
         self._checkpoint_dir = checkpoint_dir
         self._skip = skip
 
@@ -186,47 +189,12 @@ class CycleGAN:
                 return temp
             else:
                 return fake
-    
-    # def save_word(self, sess, epoch):
-    #     """
-    #     Saves input and output word.
-
-    #     :param sess: The session.
-    #     :param epoch: Currnt epoch.
-    #     """
-
-    #     if not os.path.exists(self._word_dir):
-    #         os.makedirs(self._word_dir)
-
-    #     names = ['inputA_', 'inputB_', 'fakeA_',
-    #              'fakeB_', 'cycA_', 'cycB_']
-
-    #    for i in range(0, self._num_imgs_to_save):
-    #         print("Saving image {}/{}".format(i, self._num_imgs_to_save))
-    #         inputs = sess.run(self.inputs)
-    #         fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp = sess.run([
-    #             self.fake_word_a,
-    #             self.fake_word_b,
-    #             self.cycle_word_a,
-    #             self.cycle_word_b
-    #         ], feed_dict={
-    #             self.input_a: inputs['word_i'],
-    #             self.input_b: inputs['word_j']
-    #         })
-
-    #         tensors = [inputs['word_i'], inputs['word_j'],
-    #                    fake_B_temp, fake_A_temp, cyc_A_temp, cyc_B_temp]
-
-    #         for name, tensor in zip(names, tensors):
-    #             image_name = name + str(epoch) + "_" + str(i) + ".jpg"
-    #             imsave(os.path.join(self._word_dir, image_name),
-    #                    ((tensor[0] + 1) * 127.5).astype(np.uint8)
-    #                    )
 
     def train(self):
         """Training Function."""
         # Load Dataset from the dataset folder
-        self.inputs = data_loader.load_data(self._dataset_name,True)
+        my_data_loader=DataLoaderDisk_bi(self._train_dataset_name,True)
+        max_word = my_data_loader.num
 
         # Build the network
         self.model_setup()
@@ -238,8 +206,6 @@ class CycleGAN:
         init = (tf.global_variables_initializer(),
                 tf.local_variables_initializer())
         saver = tf.train.Saver()
-
-        max_word = cyclegan_datasets.DATASET_TO_SIZES[self._dataset_name]
 
         with tf.Session() as sess:
             sess.run(init)
@@ -257,127 +223,119 @@ class CycleGAN:
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(coord=coord)
 
-            # Training Loop
-            for epoch in range(sess.run(self.global_step), self._max_step):
-                print("In the epoch ", epoch)
-                saver.save(sess, os.path.join(
-                    self._output_dir, "cyclegan"), global_step=epoch)
+            if self._do_train:
+                # Training Loop
+                for epoch in range(sess.run(self.global_step), self._max_step):
+                    print("In the epoch ", epoch)
+                    saver.save(sess, os.path.join(
+                        self._output_dir, "cyclegan"), global_step=epoch)
 
-                # Dealing with the learning rate as per the epoch number
-                if epoch < 100:
-                    curr_lr = self._base_lr
-                else:
-                    curr_lr = self._base_lr - \
-                        self._base_lr * (epoch - 100) / 100
+                    # Dealing with the learning rate as per the epoch number
+                    if epoch < 100:
+                        curr_lr = self._base_lr
+                    else:
+                        curr_lr = self._base_lr - \
+                            self._base_lr * (epoch - 100) / 100
 
-                # self.save_word(sess, epoch)
+                    # self.save_word(sess, epoch)
 
-                for i in range(0, max_word):
-                    print("Processing batch {}/{}".format(i, max_word))
+                    for i in range(0, max_word):
+                        print("Processing batch {}/{}".format(i, max_word))
 
-                    inputs = sess.run(self.inputs)
+                        input_a,input_b=my_data_loader.next_batch()
+                        # Optimizing the G_A network
+                        _, fake_B_temp, summary_str = sess.run(
+                            [self.g_A_trainer,
+                             self.fake_word_b,
+                             self.g_A_loss_summ],
+                            feed_dict={
+                                self.input_a:
+                                    input_a
+                                self.input_b:
+                                    input_b,
+                                self.learning_rate: curr_lr
+                            }
+                        )
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
-                    # Optimizing the G_A network
-                    _, fake_B_temp, summary_str = sess.run(
-                        [self.g_A_trainer,
-                         self.fake_word_b,
-                         self.g_A_loss_summ],
-                        feed_dict={
-                            self.input_a:
-                                inputs['words_i'],
-                            self.input_b:
-                                inputs['words_j'],
-                            self.learning_rate: curr_lr
-                        }
-                    )
-                    writer.add_summary(summary_str, epoch * max_word + i)
+                        fake_B_temp1 = self.fake_word_pool(
+                            self.num_fake_inputs, fake_B_temp, self.fake_word_B)
 
-                    fake_B_temp1 = self.fake_word_pool(
-                        self.num_fake_inputs, fake_B_temp, self.fake_word_B)
+                        # Optimizing the D_B network
+                        _, summary_str = sess.run(
+                            [self.d_B_trainer, self.d_B_loss_summ],
+                            feed_dict={
+                                self.input_a:
+                                    input_a
+                                self.input_b:
+                                    input_b,
+                                self.learning_rate: curr_lr,
+                                self.fake_pool_B: fake_B_temp1
+                            }
+                        )
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
-                    # Optimizing the D_B network
-                    _, summary_str = sess.run(
-                        [self.d_B_trainer, self.d_B_loss_summ],
-                        feed_dict={
-                            self.input_a:
-                                inputs['words_i'],
-                            self.input_b:
-                                inputs['words_j'],
-                            self.learning_rate: curr_lr,
-                            self.fake_pool_B: fake_B_temp1
-                        }
-                    )
-                    writer.add_summary(summary_str, epoch * max_word + i)
+                        # Optimizing the G_B network
+                        _, fake_A_temp, summary_str = sess.run(
+                            [self.g_B_trainer,
+                             self.fake_word_a,
+                             self.g_B_loss_summ],
+                            feed_dict={
+                                self.input_a:
+                                    input_a
+                                self.input_b:
+                                    input_b,
+                                self.learning_rate: curr_lr
+                            }
+                        )
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
-                    # Optimizing the G_B network
-                    _, fake_A_temp, summary_str = sess.run(
-                        [self.g_B_trainer,
-                         self.fake_word_a,
-                         self.g_B_loss_summ],
-                        feed_dict={
-                            self.input_a:
-                                inputs['words_i'],
-                            self.input_b:
-                                inputs['words_j'],
-                            self.learning_rate: curr_lr
-                        }
-                    )
-                    writer.add_summary(summary_str, epoch * max_word + i)
+                        fake_A_temp1 = self.fake_word_pool(
+                            self.num_fake_inputs, fake_A_temp, self.fake_word_A)
 
-                    fake_A_temp1 = self.fake_word_pool(
-                        self.num_fake_inputs, fake_A_temp, self.fake_word_A)
+                        # Optimizing the D_A network
+                        _, summary_str = sess.run(
+                            [self.d_A_trainer, self.d_A_loss_summ],
+                            feed_dict={
+                                self.input_a:
+                                    input_a
+                                self.input_b:
+                                    input_b,
+                                self.learning_rate: curr_lr,
+                                self.fake_pool_A: fake_A_temp1
+                            }
+                        )
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
-                    # Optimizing the D_A network
-                    _, summary_str = sess.run(
-                        [self.d_A_trainer, self.d_A_loss_summ],
-                        feed_dict={
-                            self.input_a:
-                                inputs['words_i'],
-                            self.input_b:
-                                inputs['words_j'],
-                            self.learning_rate: curr_lr,
-                            self.fake_pool_A: fake_A_temp1
-                        }
-                    )
-                    writer.add_summary(summary_str, epoch * max_word + i)
+                        writer.flush()
+                        self.num_fake_inputs += 1
+                    sess.run(tf.assign(self.global_step, epoch + 1))
 
-                    writer.flush()
-                    self.num_fake_inputs += 1
+            if self._do_test:
+                my_data_loader=DataLoaderDisk_bi(self._test_dataset_name,True)
+                max_word = my_data_loader.num
 
-                sess.run(tf.assign(self.global_step, epoch + 1))
+                reslist=[]
+                for i in range(max_word):
+                    input_a,input_b=my_data_loader.next_batch()
+                    fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp = sess.run([
+                        self.fake_word_a,
+                        self.fake_word_b,
+                        self.cycle_word_a,
+                        self.cycle_word_b
+                    ], feed_dict={
+                        self.input_a: input_a,
+                        self.input_b: input_b
+                    })
+
+                    res = [input_a, input_b,fake_B_temp, fake_A_temp, cyc_A_temp, cyc_B_temp]
+                    reslist.append(np.array(res))
 
             coord.request_stop()
             coord.join(threads)
             writer.add_graph(sess.graph)
 
-    def test(self):
-        """Test Function."""
-        print("Testing the results")
-
-        self.inputs = data_loader.load_data(self._dataset_name,False)
-
-        self.model_setup()
-        saver = tf.train.Saver()
-        init = tf.global_variables_initializer()
-
-        with tf.Session() as sess:
-            sess.run(init)
-
-            chkpt_fname = tf.train.latest_checkpoint(self._checkpoint_dir)
-            saver.restore(sess, chkpt_fname)
-
-            coord = tf.train.Coordinator()
-            threads = tf.train.start_queue_runners(coord=coord)
-
-            self._num_imgs_to_save = cyclegan_datasets.DATASET_TO_SIZES[
-                self._dataset_name]
-
-            # self.save_word(sess, 0)
-
-            coord.request_stop()
-            coord.join(threads)
-
-def run_cyclegan(to_train, log_dir, config_filename, checkpoint_dir, skip=False):
+def run_cyclegan(config):
     """
     :param 
     to_train: Specify whether it is training or testing. 
@@ -393,11 +351,13 @@ def run_cyclegan(to_train, log_dir, config_filename, checkpoint_dir, skip=False)
     input and output.
     """
 
+    to_train=config['to_train']
+    log_dir=config['log_dir']
+    checkpoint_dir=config['checkpoint_dir']
+    skip=config['skip']
+
     if not os.path.isdir(log_dir):
         os.makedirs(log_dir)
-
-    with open(config_filename) as config_file:
-        config = json.load(config_file)
 
     lambda_a = float(config['_LAMBDA_A']) if '_LAMBDA_A' in config else 10.0
     lambda_b = float(config['_LAMBDA_B']) if '_LAMBDA_B' in config else 10.0
@@ -407,15 +367,21 @@ def run_cyclegan(to_train, log_dir, config_filename, checkpoint_dir, skip=False)
     base_lr = float(config['base_lr']) if 'base_lr' in config else 0.0002
     max_step = int(config['max_step']) if 'max_step' in config else 200
     network_version = str(config['network_version'])
-    dataset_name = str(config['dataset_name'])
+    train_dataset_name = str(config['train_dataset_name'])
+    test_dataset_name = str(config['test_dataset_name'])
     do_flipping = bool(config['do_flipping'])
 
-    cyclegan_model = CycleGAN(pool_size, lambda_a, lambda_b, log_dir,
-                              to_restore, base_lr, max_step, network_version,
-                              dataset_name, checkpoint_dir, do_flipping, skip)
-
+    do_test=True
     if to_train > 0:
-        cyclegan_model.train()
-    else:
-        cyclegan_model.test()
+        do_train=True
+    elif not to_restore:
+        raise 
+
+    cyclegan_model = CycleGAN(do_train, do_test, pool_size, lambda_a, lambda_b, log_dir,
+                              to_restore, base_lr, max_step, network_version,
+                              train_dataset_name, test_dataset_name , checkpoint_dir, do_flipping, skip)
+
+    
+    cyclegan_model.run()
+
 

@@ -71,16 +71,16 @@ def get_outputs(inputs, network="tensorflow", skip=False):
 
 def gen_tf(inputgen, name="generator", skip=False):
     with tf.variable_scope(name):
-        l1 = tf.layers.dense(inputdisc,512)
+        l1 = tf.layers.dense(inputgen,512)
         l2 = tf.layers.dense(l1,1024)
         l3 = tf.layers.dense(l2,2048)
         l4 = tf.layers.dense(l3,1024)
         l5 = tf.layers.dense(l4,512)
         out_gen = tf.layers.dense(l5,300)
         if skip is True:
-            out_gen = tf.nn.tanh(inputgen + o_c6, "t1")
+            out_gen = tf.nn.tanh(inputgen + out_gen, "t1")
         else:
-            out_gen = tf.nn.tanh(o_c6, "t1")
+            out_gen = tf.nn.tanh(out_gen, "t1")
 
         return out_gen
 

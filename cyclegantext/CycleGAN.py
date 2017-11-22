@@ -10,6 +10,7 @@ import tensorflow as tf
 
 from . import cyclegan_datasets
 from . import data_loader, losses, model
+from sklearn.neighbors import NearestNeighbors
 
 slim = tf.contrib.slim
 
@@ -20,11 +21,11 @@ class CycleGAN:
     def __init__(self, do_train, do_test, pool_size, lambda_a,
                  lambda_b, output_root_dir, to_restore,
                  base_lr, max_step, network_version,
-                 dataset_name, checkpoint_dir, do_flipping, skip):
+                 train_dataset_name, test_dataset_name, checkpoint_dir, skip):
         current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         self._do_train=do_train
-        self._do_test=_do_test
+        self._do_test=do_test
         self._pool_size = pool_size
         self._lambda_a = lambda_a
         self._lambda_b = lambda_b
@@ -190,10 +191,10 @@ class CycleGAN:
             else:
                 return fake
 
-    def train(self):
+    def run(self):
         """Training Function."""
         # Load Dataset from the dataset folder
-        my_data_loader=DataLoaderDisk_bi(self._train_dataset_name,True)
+        my_data_loader=data_loader.DataLoaderDisk_bi(self._train_dataset_name,True)
         max_word = my_data_loader.num
 
         # Build the network
@@ -226,7 +227,6 @@ class CycleGAN:
             if self._do_train:
                 # Training Loop
                 for epoch in range(sess.run(self.global_step), self._max_step):
-                    print("In the epoch ", epoch)
                     saver.save(sess, os.path.join(
                         self._output_dir, "cyclegan"), global_step=epoch)
 
@@ -240,7 +240,8 @@ class CycleGAN:
                     # self.save_word(sess, epoch)
 
                     for i in range(0, max_word):
-                        print("Processing batch {}/{}".format(i, max_word))
+                        if i%100==0:
+                            print("Processing batch {}/{}".format(i, max_word))
 
                         input_a,input_b=my_data_loader.next_batch()
                         # Optimizing the G_A network
@@ -250,7 +251,7 @@ class CycleGAN:
                              self.g_A_loss_summ],
                             feed_dict={
                                 self.input_a:
-                                    input_a
+                                    input_a,
                                 self.input_b:
                                     input_b,
                                 self.learning_rate: curr_lr
@@ -266,7 +267,7 @@ class CycleGAN:
                             [self.d_B_trainer, self.d_B_loss_summ],
                             feed_dict={
                                 self.input_a:
-                                    input_a
+                                    input_a,
                                 self.input_b:
                                     input_b,
                                 self.learning_rate: curr_lr,
@@ -282,7 +283,7 @@ class CycleGAN:
                              self.g_B_loss_summ],
                             feed_dict={
                                 self.input_a:
-                                    input_a
+                                    input_a,
                                 self.input_b:
                                     input_b,
                                 self.learning_rate: curr_lr
@@ -298,7 +299,7 @@ class CycleGAN:
                             [self.d_A_trainer, self.d_A_loss_summ],
                             feed_dict={
                                 self.input_a:
-                                    input_a
+                                    input_a,
                                 self.input_b:
                                     input_b,
                                 self.learning_rate: curr_lr,
@@ -312,7 +313,7 @@ class CycleGAN:
                     sess.run(tf.assign(self.global_step, epoch + 1))
 
             if self._do_test:
-                my_data_loader=DataLoaderDisk_bi(self._test_dataset_name,True)
+                my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,True)
                 max_word = my_data_loader.num
 
                 reslist=[]
@@ -328,60 +329,27 @@ class CycleGAN:
                         self.input_b: input_b
                     })
 
-                    res = [input_a, input_b,fake_B_temp, fake_A_temp, cyc_A_temp, cyc_B_temp]
+                    res = [input_a, input_b, fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp]
                     reslist.append(np.array(res))
+                reslist=np.array(reslist)
+
+                print ('Test accruacy')
+                print evaluation(reslist[:,3],reslist[:,0],n_neighbors=1)
+                print evaluation(reslist[:,2],reslist[:,1],n_neighbors=1)
 
             coord.request_stop()
             coord.join(threads)
             writer.add_graph(sess.graph)
 
-def run_cyclegan(config):
-    """
-    :param 
-    to_train: Specify whether it is training or testing. 
-    0: testing
-    1: training; 
-    2: resuming from latest checkpoint; 
-    :param log_dir: The root dir to save checkpoints and the prediction. The actual dir
-    is the root dir appended by the folder with the name timestamp.
-    :param config_filename: The configuration file.
-    :param checkpoint_dir: The directory that saves the latest checkpoint. It
-    only takes effect when to_train == 2.
-    :param skip: A boolean indicating whether to add skip connection between
-    input and output.
-    """
-
-    to_train=config['to_train']
-    log_dir=config['log_dir']
-    checkpoint_dir=config['checkpoint_dir']
-    skip=config['skip']
-
-    if not os.path.isdir(log_dir):
-        os.makedirs(log_dir)
-
-    lambda_a = float(config['_LAMBDA_A']) if '_LAMBDA_A' in config else 10.0
-    lambda_b = float(config['_LAMBDA_B']) if '_LAMBDA_B' in config else 10.0
-    pool_size = int(config['pool_size']) if 'pool_size' in config else 50
-
-    to_restore = (to_train == 2)
-    base_lr = float(config['base_lr']) if 'base_lr' in config else 0.0002
-    max_step = int(config['max_step']) if 'max_step' in config else 200
-    network_version = str(config['network_version'])
-    train_dataset_name = str(config['train_dataset_name'])
-    test_dataset_name = str(config['test_dataset_name'])
-    do_flipping = bool(config['do_flipping'])
-
-    do_test=True
-    if to_train > 0:
-        do_train=True
-    elif not to_restore:
-        raise 
-
-    cyclegan_model = CycleGAN(do_train, do_test, pool_size, lambda_a, lambda_b, log_dir,
-                              to_restore, base_lr, max_step, network_version,
-                              train_dataset_name, test_dataset_name , checkpoint_dir, do_flipping, skip)
-
-    
-    cyclegan_model.run()
-
-
+def evaluation(predict,real,n_neighbors=1):
+    predict=np.array(predict)
+    real=np.array(real)
+    model=NearestNeighbors(n_neighbors=n_neighbors)
+    model.fit(real)
+    output=model.kneighbors(predict, return_distance=False) 
+    realmap=np.arange(0,predict.shape[0],1)
+    total_acc=0.
+    for i in range(predict.shape[0]):
+        if realmap[i] in output[i]:
+            total_acc+=1.
+    return total_acc/predict.shape[0]

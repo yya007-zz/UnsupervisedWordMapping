@@ -7,7 +7,7 @@ class DataLoaderDisk_bi(object):
         self.dataset = np.load(dataset_name) 
         self.loader_a = DataLoaderDisk_mo(self.dataset[:,0],do_shuffle)
         self.loader_b = DataLoaderDisk_mo(self.dataset[:,1],do_shuffle)
-    
+        self.num = min(self.loader_a.num,self.loader_b.num)
     def next_batch(self, batch_size=1):
         return self.loader_a.next_batch(batch_size),self.loader_b.next_batch(batch_size)
 
@@ -34,16 +34,18 @@ class DataLoaderDisk_mo(object):
             labels_batch: np1darray (batch_size,); the label batch
         """
 
-        if self._idx+batch>=self.num:
+        if self._idx+batch_size>=self.num:
             self._idx = 0
             self.permutation()
 
         if batch_size==1:
             data = self.dataset[self._idx]
+            newshape=[1]
+            newshape.extend(data.shape)
+            data = data.reshape(newshape)
         else:
             data = self.dataset[self._idx:self._idx+batch_size]
-        self._idx += batch
-                
+        self._idx += batch_size
         return data
 
     def permutation(self):

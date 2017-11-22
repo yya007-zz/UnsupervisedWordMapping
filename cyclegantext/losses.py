@@ -2,11 +2,11 @@
 import tensorflow as tf
 
 
-def cycle_consistency_loss(real_images, generated_images):
+def cycle_consistency_loss(real_word, generated_word):
     """Compute the cycle consistency loss.
 
     The cycle consistency loss is defined as the sum of the L1 distances
-    between the real images from each domain and their generated (fake)
+    between the real word from each domain and their generated (fake)
     counterparts.
 
     This definition is derived from Equation 2 in:
@@ -16,16 +16,16 @@ def cycle_consistency_loss(real_images, generated_images):
 
 
     Args:
-        real_images: A batch of images from domain X, a `Tensor` of shape
+        real_word: A batch of word from domain X, a `Tensor` of shape
             [batch_size, height, width, channels].
-        generated_images: A batch of generated images made to look like they
+        generated_word: A batch of generated word made to look like they
             came from domain X, a `Tensor` of shape
             [batch_size, height, width, channels].
 
     Returns:
         The cycle consistency loss.
     """
-    return tf.reduce_mean(tf.abs(real_images - generated_images))
+    return tf.reduce_mean(tf.abs(real_word - generated_word))
 
 
 def lsgan_loss_generator(prob_fake_is_real):
@@ -39,8 +39,8 @@ def lsgan_loss_generator(prob_fake_is_real):
         https://arxiv.org/pdf/1611.04076.pdf
 
     Args:
-        prob_fake_is_real: The discriminator's estimate that generated images
-            made to look like real images are real.
+        prob_fake_is_real: The discriminator's estimate that generated word
+            made to look like real word are real.
 
     Returns:
         The total LS-GAN loss.
@@ -59,10 +59,10 @@ def lsgan_loss_discriminator(prob_real_is_real, prob_fake_is_real):
         https://arxiv.org/pdf/1611.04076.pdf
 
     Args:
-        prob_real_is_real: The discriminator's estimate that images actually
+        prob_real_is_real: The discriminator's estimate that word actually
             drawn from the real domain are in fact real.
-        prob_fake_is_real: The discriminator's estimate that generated images
-            made to look like real images are real.
+        prob_fake_is_real: The discriminator's estimate that generated word
+            made to look like real word are real.
 
     Returns:
         The total LS-GAN loss.

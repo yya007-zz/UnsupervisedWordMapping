@@ -1,4 +1,5 @@
 from fasttext import FastVector
+from __future__ import print_function
 import numpy as np
 
 def word2vector_mo(wordlist,dictionary):
@@ -77,7 +78,7 @@ def encodingFiles_mo():
 	array=np.load(file+".npy")
 	vec=word2vector_mo(array,it_dictionary)
 	np.save(file+'_vec.npy',vec)
-	print vec.shape
+	print(vec.shape)
 
 def encodingFiles_bi():
 	en_dictionary = FastVector(vector_file="./data/pretrained/en.vec")
@@ -87,13 +88,13 @@ def encodingFiles_bi():
 	array=np.load(file+".npy")
 	vec=word2vector_bi(array[:,0],array[:,1],en_dictionary,it_dictionary)
 	np.save(file+'_vec.npy',vec)
-	print vec.shape
+	print(vec.shape)
 
 	file="./data/en_it_test"
 	array=np.load(file+".npy")
 	vec=word2vector_bi(array[:,0],array[:,1],en_dictionary,it_dictionary)
 	np.save(file+'_vec.npy',vec)
-	print vec.shape
+	print(vec.shape)
 
 	del en_dictionary
 	del it_dictionary

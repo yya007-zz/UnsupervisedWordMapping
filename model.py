@@ -1,8 +1,7 @@
 """Code for constructing the model and get the outputs from the model."""
-
+from __future__ import print_function
 import tensorflow as tf
-
-from . import layers
+import layers
 
 WORD_EMBED_DIM=300
 

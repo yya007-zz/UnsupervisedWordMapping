@@ -4,6 +4,7 @@ import json
 import numpy as np
 import os
 import random
+import time
 from scipy.misc import imsave
 
 import click

@@ -1,15 +1,15 @@
 """Code for training CycleGAN."""
+from __future__ import print_function
 from datetime import datetime
 import json
 import numpy as np
 import os
 import random
-
-import click
+import time
 import tensorflow as tf
 
-from . import cyclegan_datasets
-from . import data_loader, losses, model
+import cyclegan_datasets
+import data_loader, losses, model
 from sklearn.neighbors import NearestNeighbors
 
 slim = tf.contrib.slim
@@ -227,6 +227,7 @@ class CycleGAN:
             if self._do_train:
                 # Training Loop
                 for epoch in range(sess.run(self.global_step), self._max_step):
+                    cur=time.time()
                     saver.save(sess, os.path.join(
                         self._output_dir, "cyclegan"), global_step=epoch)
 
@@ -311,6 +312,7 @@ class CycleGAN:
                         writer.flush()
                         self.num_fake_inputs += 1
                     sess.run(tf.assign(self.global_step, epoch + 1))
+                    print(time.time()-cur,'s for 1 epoch')
 
             if self._do_test:
                 my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,True)
@@ -334,8 +336,8 @@ class CycleGAN:
                 reslist=np.array(reslist)
 
                 print ('Test accruacy')
-                print evaluation(reslist[:,3],reslist[:,0],n_neighbors=1)
-                print evaluation(reslist[:,2],reslist[:,1],n_neighbors=1)
+                print (evaluation(reslist[:,3],reslist[:,0],n_neighbors=1))
+                print (evaluation(reslist[:,2],reslist[:,1],n_neighbors=1))
 
             coord.request_stop()
             coord.join(threads)

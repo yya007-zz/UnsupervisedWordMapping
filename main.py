@@ -1,4 +1,7 @@
-from cyclegantext.CycleGAN import *
+from __future__ import print_function
+import time
+
+from CycleGAN import *
 
 def run_cyclegan(config):
     """

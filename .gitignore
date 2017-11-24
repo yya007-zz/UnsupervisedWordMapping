@@ -3,3 +3,4 @@ log/*
 output/*
 .DS_Store
 cmd.txt
+*.pyc

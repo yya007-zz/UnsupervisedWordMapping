@@ -8,7 +8,6 @@ import random
 import time
 import tensorflow as tf
 
-import cyclegan_datasets
 import data_loader, losses, model
 from sklearn.neighbors import NearestNeighbors
 

@@ -1,5 +1,5 @@
-from fasttext import FastVector
 from __future__ import print_function
+from fasttext import FastVector
 import numpy as np
 
 def word2vector_mo(wordlist,dictionary):

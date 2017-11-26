@@ -100,9 +100,9 @@ def encodingFiles_bi():
 	del it_dictionary
 
 def main():
-	# getTheFrequency()
-	# createTrainAndTest()	
-	# encodingFiles_mo()
+	getTheFrequency()
+	createTrainAndTest()	
+	encodingFiles_mo()
 	encodingFiles_bi()
 
 

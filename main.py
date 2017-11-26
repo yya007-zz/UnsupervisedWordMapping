@@ -53,6 +53,7 @@ def run_cyclegan(config):
 
 if __name__ == '__main__':
 
+	print('start to run')
 	exp_01={
 		"description": "The word translation cyclegan.", 
 		"pool_size": 50,

@@ -67,7 +67,8 @@ if __name__ == '__main__':
 
 		"to_train" : 1,
 		"log_dir" : './output/cyclegan/exp_01',
-		"checkpoint_dir" : './output/cyclegan/exp_01/#timestamp#',
+		# "checkpoint_dir" : './output/cyclegan/exp_01/#timestamp#',
+		"checkpoint_dir" : './output/cyclegan/exp_01',
 		"skip" : False
 	}
 	run_cyclegan(exp_01)

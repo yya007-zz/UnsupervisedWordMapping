@@ -30,7 +30,6 @@ class CycleGAN:
         self._lambda_b = lambda_b
         self._output_dir = os.path.join(output_root_dir, current_time)
         self._word_dir = os.path.join(self._output_dir, 'imgs')
-        self._num_imgs_to_save = 20
         self._to_restore = to_restore
         self._base_lr = base_lr
         self._max_step = max_step
@@ -207,7 +206,10 @@ class CycleGAN:
                 tf.local_variables_initializer())
         saver = tf.train.Saver()
 
-        with tf.Session() as sess:
+        config = tf.ConfigProto()
+        config.gpu_options.allocator_type = 'BFC'
+
+        with tf.Session(config = config) as sess:
             sess.run(init)
 
             # Restore the model to run the model from last checkpoint

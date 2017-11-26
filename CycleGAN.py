@@ -206,8 +206,8 @@ class CycleGAN:
                 tf.local_variables_initializer())
         saver = tf.train.Saver()
 
-        config = tf.ConfigProto()
-        config.gpu_options.allocator_type = 'BFC'
+        # config = tf.ConfigProto()
+        # config.gpu_options.allocator_type = 'BFC'
 
         with tf.Session(config = config) as sess:
             sess.run(init)

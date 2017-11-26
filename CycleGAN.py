@@ -209,7 +209,7 @@ class CycleGAN:
         # config = tf.ConfigProto()
         # config.gpu_options.allocator_type = 'BFC'
 
-        with tf.Session(config = config) as sess:
+        with tf.Session() as sess:
             sess.run(init)
 
             # Restore the model to run the model from last checkpoint

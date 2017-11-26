@@ -72,7 +72,7 @@ def encodingFiles_mo():
 	array=np.load(file+".npy")
 	vec=word2vector_mo(array,en_dictionary)
 	np.save(file+'_vec.npy',vec)
-	print vec.shape
+	print(vec.shape)
 
 	file="./data/it"
 	array=np.load(file+".npy")

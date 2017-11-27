@@ -283,7 +283,6 @@ class CycleGAN:
                             print("Processing batch {}/{}".format(i, its))
 
                         input_a,input_b=my_data_loader.next_batch()
-                        d_loss_A,
                         # Optimizing the G_A network
                         _, fake_B_temp, summary_str,loss_g_a,loss_g_b,loss_d_a,loss_d_b = sess.run(
                             [self.g_A_trainer,

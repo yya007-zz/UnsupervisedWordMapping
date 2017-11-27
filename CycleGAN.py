@@ -227,7 +227,7 @@ class CycleGAN:
             # threads = tf.train.start_queue_runners(coord=coord)
 
             def do_test():
-                my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,BATCH_SIZE,True)
+                my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,BATCH_SIZE,False)
                 max_word = my_data_loader.num
                 its = max_word//BATCH_SIZE+1
 

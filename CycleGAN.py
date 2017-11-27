@@ -207,7 +207,7 @@ class CycleGAN:
 
         config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allocator_type = 'BFC'
-        #config.gpu_options.per_process_gpu_memory_fraction = 0.40
+        config.gpu_options.per_process_gpu_memory_fraction = 0.80
         config.gpu_options.allow_growth = True
 
         with tf.Session(config = config) as sess:

@@ -229,6 +229,7 @@ class CycleGAN:
             def do_test():
                 my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,BATCH_SIZE,False)
                 max_word = my_data_loader.num
+                print('Total test sample number',max_word)
                 its = max_word//BATCH_SIZE+1
 
                 reslist= np.zeros([its*BATCH_SIZE,6,model.WORD_EMBED_DIM])
@@ -255,7 +256,13 @@ class CycleGAN:
 
                 print ('Test accruacy')
                 print ('top1',evaluation(reslist[:,3],reslist[:,0],n_neighbors=1))
+                print ('top5',evaluation(reslist[:,3],reslist[:,0],n_neighbors=5))
+                print ('top1',evaluation(reslist[:,2],reslist[:,1],n_neighbors=1))
                 print ('top5',evaluation(reslist[:,2],reslist[:,1],n_neighbors=5))
+                print ('top1',evaluation(reslist[:,4],reslist[:,0],n_neighbors=1))
+                print ('top5',evaluation(reslist[:,4],reslist[:,0],n_neighbors=5))
+                print ('top1',evaluation(reslist[:,5],reslist[:,1],n_neighbors=1))
+                print ('top5',evaluation(reslist[:,5],reslist[:,1],n_neighbors=5))
 
             if self._do_train:
                 # Load Dataset from the dataset folder

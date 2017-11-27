@@ -154,19 +154,19 @@ class CycleGAN:
         d_B_vars = [var for var in self.model_vars if 'd_B' in var.name]
         g_B_vars = [var for var in self.model_vars if 'g_B' in var.name]
 
-        self.d_A_trainer = optimizer.minimize(d_loss_A, var_list=d_A_vars)
-        self.d_B_trainer = optimizer.minimize(d_loss_B, var_list=d_B_vars)
-        self.g_A_trainer = optimizer.minimize(g_loss_A, var_list=g_A_vars)
-        self.g_B_trainer = optimizer.minimize(g_loss_B, var_list=g_B_vars)
+        self.d_A_trainer = optimizer.minimize(self.d_loss_A, var_list=d_A_vars)
+        self.d_B_trainer = optimizer.minimize(self.d_loss_B, var_list=d_B_vars)
+        self.g_A_trainer = optimizer.minimize(self.g_loss_A, var_list=g_A_vars)
+        self.g_B_trainer = optimizer.minimize(self.g_loss_B, var_list=g_B_vars)
 
         for var in self.model_vars:
             print(var.name)
 
         # Summary variables for tensorboard
-        self.g_A_loss_summ = tf.summary.scalar("g_A_loss", g_loss_A)
-        self.g_B_loss_summ = tf.summary.scalar("g_B_loss", g_loss_B)
-        self.d_A_loss_summ = tf.summary.scalar("d_A_loss", d_loss_A)
-        self.d_B_loss_summ = tf.summary.scalar("d_B_loss", d_loss_B)
+        self.g_A_loss_summ = tf.summary.scalar("g_A_loss", self.g_loss_A)
+        self.g_B_loss_summ = tf.summary.scalar("g_B_loss", self.g_loss_B)
+        self.d_A_loss_summ = tf.summary.scalar("d_A_loss", self.d_loss_A)
+        self.d_B_loss_summ = tf.summary.scalar("d_B_loss", self.d_loss_B)
 
     def fake_word_pool(self, num_fakes, fake, fake_pool):
         """

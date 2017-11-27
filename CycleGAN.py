@@ -255,10 +255,10 @@ class CycleGAN:
                 reslist=reslist[:max_word,:,:]
 
                 print ('Test accruacy')
-                print ('top1',evaluation(reslist[:,3],reslist[:,0],n_neighbors=1))
-                print ('top5',evaluation(reslist[:,3],reslist[:,0],n_neighbors=5))
-                print ('top1',evaluation(reslist[:,2],reslist[:,1],n_neighbors=1))
-                print ('top5',evaluation(reslist[:,2],reslist[:,1],n_neighbors=5))
+                print ('top1',evaluation(reslist[:,2],reslist[:,0],n_neighbors=1))
+                print ('top5',evaluation(reslist[:,2],reslist[:,0],n_neighbors=5))
+                print ('top1',evaluation(reslist[:,3],reslist[:,1],n_neighbors=1))
+                print ('top5',evaluation(reslist[:,3],reslist[:,1],n_neighbors=5))
                 print ('top1',evaluation(reslist[:,4],reslist[:,0],n_neighbors=1))
                 print ('top5',evaluation(reslist[:,4],reslist[:,0],n_neighbors=5))
                 print ('top1',evaluation(reslist[:,5],reslist[:,1],n_neighbors=1))

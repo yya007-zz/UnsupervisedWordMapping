@@ -91,7 +91,7 @@ def dis_tf(inputdisc, name="discriminator"):
         l5 = tf.layers.dense(l4,64)
         l5 = tf.layers.dense(l4,32)
         l6 = tf.layers.dense(l5,2)
-        out = tf.nn.softmax(out)
+        out = tf.nn.softmax(l6)
     return out[:,0]
 
 

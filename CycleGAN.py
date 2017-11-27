@@ -291,7 +291,7 @@ class CycleGAN:
                              self.g_loss_A,
                              self.g_loss_B,
                              self.d_loss_A,
-                             self.d_loss_b],
+                             self.d_loss_],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -313,7 +313,7 @@ class CycleGAN:
                              self.g_loss_A,
                              self.g_loss_B,
                              self.d_loss_A,
-                             self.d_loss_b],
+                             self.d_loss_B],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -334,7 +334,7 @@ class CycleGAN:
                              self.g_loss_A,
                              self.g_loss_B,
                              self.d_loss_A,
-                             self.d_loss_b],
+                             self.d_loss_B],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -356,7 +356,7 @@ class CycleGAN:
                              self.g_loss_A,
                              self.g_loss_B,
                              self.d_loss_A,
-                             self.d_loss_b],
+                             self.d_loss_B],
                             feed_dict={
                                 self.input_a:
                                     input_a,

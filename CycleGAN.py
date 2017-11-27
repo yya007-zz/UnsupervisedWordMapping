@@ -265,6 +265,7 @@ class CycleGAN:
 
                 # Training Loop
                 for epoch in range(sess.run(self.global_step), self._max_step):
+                    print ('epoch:',epoch)
                     cur=time.time()
                     # saver.save(sess, os.path.join(self._output_dir, "cyclegan"), global_step=epoch)
 
@@ -296,6 +297,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
+                        print(summary_str)
 
                         fake_B_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_B_temp, self.fake_word_B)
@@ -313,6 +315,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
+                        print(summary_str)
 
                         # Optimizing the G_B network
                         _, fake_A_temp, summary_str = sess.run(
@@ -328,6 +331,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
+                        print(summary_str)
 
                         fake_A_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_A_temp, self.fake_word_A)
@@ -345,6 +349,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
+                        print(summary_str)
 
                         writer.flush()
                         self.num_fake_inputs += 1

@@ -207,7 +207,7 @@ class CycleGAN:
 
         config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allocator_type = 'BFC'
-        config.gpu_options.per_process_gpu_memory_fraction = 0.80
+        # config.gpu_options.per_process_gpu_memory_fraction = 0.8
         config.gpu_options.allow_growth = True
 
         with tf.Session(config = config) as sess:
@@ -218,13 +218,13 @@ class CycleGAN:
                 chkpt_fname = tf.train.latest_checkpoint(self._checkpoint_dir)
                 saver.restore(sess, chkpt_fname)
 
-            # writer = tf.summary.FileWriter(self._output_dir)
+            writer = tf.summary.FileWriter(self._output_dir)
 
             if not os.path.exists(self._output_dir):
                 os.makedirs(self._output_dir)
 
-            coord = tf.train.Coordinator()
-            threads = tf.train.start_queue_runners(coord=coord)
+            # coord = tf.train.Coordinator()
+            # threads = tf.train.start_queue_runners(coord=coord)
 
             def do_test():
                 my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,BATCH_SIZE,True)
@@ -296,7 +296,7 @@ class CycleGAN:
                                 self.learning_rate: curr_lr
                             }
                         )
-                        # writer.add_summary(summary_str, epoch * max_word + i)
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
                         fake_B_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_B_temp, self.fake_word_B)
@@ -313,7 +313,7 @@ class CycleGAN:
                                 self.fake_pool_B: fake_B_temp1
                             }
                         )
-                        # writer.add_summary(summary_str, epoch * max_word + i)
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
                         # Optimizing the G_B network
                         _, fake_A_temp, summary_str = sess.run(
@@ -328,7 +328,7 @@ class CycleGAN:
                                 self.learning_rate: curr_lr
                             }
                         )
-                        # writer.add_summary(summary_str, epoch * max_word + i)
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
                         fake_A_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_A_temp, self.fake_word_A)
@@ -345,9 +345,9 @@ class CycleGAN:
                                 self.fake_pool_A: fake_A_temp1
                             }
                         )
-                        # writer.add_summary(summary_str, epoch * max_word + i)
+                        writer.add_summary(summary_str, epoch * max_word + i)
 
-                        # writer.flush()
+                        writer.flush()
                         self.num_fake_inputs += 1
 
 
@@ -360,8 +360,8 @@ class CycleGAN:
             if self._do_test:
                 do_test()
             
-            coord.request_stop()
-            coord.join(threads)
+            # coord.request_stop()
+            # coord.join(threads)
             writer.add_graph(sess.graph)
 
 def evaluation(predict,real,n_neighbors=1):

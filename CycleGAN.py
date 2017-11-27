@@ -278,6 +278,8 @@ class CycleGAN:
 
                     # self.save_word(sess, epoch)
 
+
+                    loss_record=np.zeros([its,4])
                     for i in range(0, its):
                         if i%(its//10)==0:
                             print("Processing batch {}/{}".format(i, its))
@@ -298,7 +300,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(loss)
+                        loss_record[i,0]=loss
 
                         fake_B_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_B_temp, self.fake_word_B)
@@ -318,7 +320,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(loss)
+                        loss_record[i,1]=loss
 
                         # Optimizing the G_B network
                         _, fake_A_temp, summary_str,loss  = sess.run(
@@ -335,7 +337,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(loss)
+                        loss_record[i,2]=loss
 
                         fake_A_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_A_temp, self.fake_word_A)
@@ -355,15 +357,18 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(loss)
+                        loss_record[i,3]=loss
 
                         writer.flush()
                         self.num_fake_inputs += 1
 
 
                     sess.run(tf.assign(self.global_step, epoch + 1))
-                    print(time.time()-cur,'s for 1 epoch')
-                    
+                    print(time.time()-cur,'s for ',epoch,' epoch')
+                    print(loss_record[:,0])
+                    print(loss_record[:,1])
+                    print(loss_record[:,2])
+                    print(loss_record[:,3])
                     if self._do_test:
                         do_test()
 

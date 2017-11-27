@@ -218,7 +218,7 @@ class CycleGAN:
                 chkpt_fname = tf.train.latest_checkpoint(self._checkpoint_dir)
                 saver.restore(sess, chkpt_fname)
 
-            writer = tf.summary.FileWriter(self._output_dir)
+            # writer = tf.summary.FileWriter(self._output_dir)
 
             if not os.path.exists(self._output_dir):
                 os.makedirs(self._output_dir)
@@ -296,7 +296,7 @@ class CycleGAN:
                                 self.learning_rate: curr_lr
                             }
                         )
-                        writer.add_summary(summary_str, epoch * max_word + i)
+                        # writer.add_summary(summary_str, epoch * max_word + i)
 
                         fake_B_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_B_temp, self.fake_word_B)
@@ -313,7 +313,7 @@ class CycleGAN:
                                 self.fake_pool_B: fake_B_temp1
                             }
                         )
-                        writer.add_summary(summary_str, epoch * max_word + i)
+                        # writer.add_summary(summary_str, epoch * max_word + i)
 
                         # Optimizing the G_B network
                         _, fake_A_temp, summary_str = sess.run(
@@ -328,7 +328,7 @@ class CycleGAN:
                                 self.learning_rate: curr_lr
                             }
                         )
-                        writer.add_summary(summary_str, epoch * max_word + i)
+                        # writer.add_summary(summary_str, epoch * max_word + i)
 
                         fake_A_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_A_temp, self.fake_word_A)
@@ -345,9 +345,9 @@ class CycleGAN:
                                 self.fake_pool_A: fake_A_temp1
                             }
                         )
-                        writer.add_summary(summary_str, epoch * max_word + i)
+                        # writer.add_summary(summary_str, epoch * max_word + i)
 
-                        writer.flush()
+                        # writer.flush()
                         self.num_fake_inputs += 1
 
 

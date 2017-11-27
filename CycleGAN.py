@@ -203,7 +203,7 @@ class CycleGAN:
         # Initializing the global variables
         init = (tf.global_variables_initializer(),
                 tf.local_variables_initializer())
-        saver = tf.train.Saver()
+        # saver = tf.train.Saver()
 
         config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allocator_type = 'BFC'
@@ -266,8 +266,7 @@ class CycleGAN:
                 # Training Loop
                 for epoch in range(sess.run(self.global_step), self._max_step):
                     cur=time.time()
-                    saver.save(sess, os.path.join(
-                        self._output_dir, "cyclegan"), global_step=epoch)
+                    # saver.save(sess, os.path.join(self._output_dir, "cyclegan"), global_step=epoch)
 
                     # Dealing with the learning rate as per the epoch number
                     if epoch < 100:

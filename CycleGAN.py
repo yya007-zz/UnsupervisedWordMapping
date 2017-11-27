@@ -131,16 +131,16 @@ class CycleGAN:
         lsgan_loss_a = losses.lsgan_loss_generator(self.prob_fake_a_is_real)
         lsgan_loss_b = losses.lsgan_loss_generator(self.prob_fake_b_is_real)
 
-        g_loss_A = \
+        self.g_loss_A = \
             cycle_consistency_loss_a + cycle_consistency_loss_b + lsgan_loss_b
-        g_loss_B = \
+        self.g_loss_B = \
             cycle_consistency_loss_b + cycle_consistency_loss_a + lsgan_loss_a
 
-        d_loss_A = losses.lsgan_loss_discriminator(
+        self.d_loss_A = losses.lsgan_loss_discriminator(
             prob_real_is_real=self.prob_real_a_is_real,
             prob_fake_is_real=self.prob_fake_pool_a_is_real,
         )
-        d_loss_B = losses.lsgan_loss_discriminator(
+        self.d_loss_B = losses.lsgan_loss_discriminator(
             prob_real_is_real=self.prob_real_b_is_real,
             prob_fake_is_real=self.prob_fake_pool_b_is_real,
         )
@@ -283,11 +283,16 @@ class CycleGAN:
                             print("Processing batch {}/{}".format(i, its))
 
                         input_a,input_b=my_data_loader.next_batch()
+                        d_loss_A,
                         # Optimizing the G_A network
-                        _, fake_B_temp, summary_str = sess.run(
+                        _, fake_B_temp, summary_str,loss_g_a,loss_g_b,loss_d_a,loss_d_b = sess.run(
                             [self.g_A_trainer,
                              self.fake_word_b,
-                             self.g_A_loss_summ],
+                             self.g_A_loss_summ,
+                             self.g_loss_A,
+                             self.g_loss_B,
+                             self.d_loss_A,
+                             self.d_loss_b],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -297,14 +302,19 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(summary_str)
+                        print(loss_g_a,loss_g_b,loss_d_a,loss_d_b)
 
                         fake_B_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_B_temp, self.fake_word_B)
 
                         # Optimizing the D_B network
-                        _, summary_str = sess.run(
-                            [self.d_B_trainer, self.d_B_loss_summ],
+                        _, summary_str,loss_g_a,loss_g_b,loss_d_a,loss_d_b  = sess.run(
+                            [self.d_B_trainer, 
+                             self.d_B_loss_summ,
+                             self.g_loss_A,
+                             self.g_loss_B,
+                             self.d_loss_A,
+                             self.d_loss_b],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -315,13 +325,17 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(summary_str)
+                        print(loss_g_a,loss_g_b,loss_d_a,loss_d_b)
 
                         # Optimizing the G_B network
-                        _, fake_A_temp, summary_str = sess.run(
+                        _, fake_A_temp, summary_str,loss_g_a,loss_g_b,loss_d_a,loss_d_b  = sess.run(
                             [self.g_B_trainer,
                              self.fake_word_a,
-                             self.g_B_loss_summ],
+                             self.g_B_loss_summ,
+                             self.g_loss_A,
+                             self.g_loss_B,
+                             self.d_loss_A,
+                             self.d_loss_b],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -331,14 +345,19 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(summary_str)
+                        print(loss_g_a,loss_g_b,loss_d_a,loss_d_b)
 
                         fake_A_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_A_temp, self.fake_word_A)
 
                         # Optimizing the D_A network
-                        _, summary_str = sess.run(
-                            [self.d_A_trainer, self.d_A_loss_summ],
+                        _, summary_str,loss_g_a,loss_g_b,loss_d_a,loss_d_b  = sess.run(
+                            [self.d_A_trainer, 
+                             self.d_A_loss_summ,
+                             self.g_loss_A,
+                             self.g_loss_B,
+                             self.d_loss_A,
+                             self.d_loss_b],
                             feed_dict={
                                 self.input_a:
                                     input_a,
@@ -349,7 +368,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(summary_str)
+                        print(loss_g_a,loss_g_b,loss_d_a,loss_d_b)
 
                         writer.flush()
                         self.num_fake_inputs += 1

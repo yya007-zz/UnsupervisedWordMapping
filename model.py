@@ -6,7 +6,7 @@ import layers
 WORD_EMBED_DIM=300
 
 # The number of samples per batch.
-BATCH_SIZE = 300
+BATCH_SIZE = 100
 
 POOL_SIZE = 50
 ngf = 32

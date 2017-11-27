@@ -6,7 +6,7 @@ import layers
 WORD_EMBED_DIM=300
 
 # The number of samples per batch.
-BATCH_SIZE = 1
+BATCH_SIZE = 300
 
 POOL_SIZE = 50
 ngf = 32
@@ -80,7 +80,6 @@ def gen_tf(inputgen, name="generator", skip=False):
             out_gen = tf.nn.tanh(inputgen + out_gen, "t1")
         else:
             out_gen = tf.nn.tanh(out_gen, "t1")
-
         return out_gen
 
 def dis_tf(inputdisc, name="discriminator"):

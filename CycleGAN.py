@@ -21,15 +21,15 @@ class CycleGAN:
                  lambda_b, output_root_dir, to_restore,
                  base_lr, max_step, network_version,
                  train_dataset_name, test_dataset_name, checkpoint_dir, skip):
-        current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+        # current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         self._do_train=do_train
         self._do_test=do_test
         self._pool_size = pool_size
         self._lambda_a = lambda_a
         self._lambda_b = lambda_b
-        self._output_dir = os.path.join(output_root_dir, current_time)
-        self._word_dir = os.path.join(self._output_dir, 'imgs')
+        # self._output_dir = os.path.join(output_root_dir, current_time)
+        self._output_dir = output_root_dir
         self._to_restore = to_restore
         self._base_lr = base_lr
         self._max_step = max_step
@@ -40,10 +40,10 @@ class CycleGAN:
         self._skip = skip
 
         self.fake_word_A = np.zeros(
-            (self._pool_size, 1, model.WORD_EMBED_DIM)
+            (self._pool_size, model.BATCH_SIZE, model.WORD_EMBED_DIM)
         )
         self.fake_word_B = np.zeros(
-            (self._pool_size, 1, model.WORD_EMBED_DIM)
+            (self._pool_size, model.BATCH_SIZE, model.WORD_EMBED_DIM)
         )
 
     def model_setup(self):
@@ -60,12 +60,12 @@ class CycleGAN:
         """
         self.input_a = tf.placeholder(
             tf.float32, [
-                1,
+                None,
                 model.WORD_EMBED_DIM
             ], name="input_A")
         self.input_b = tf.placeholder(
             tf.float32, [
-                1,
+                None,
                 model.WORD_EMBED_DIM
             ], name="input_B")
 
@@ -170,30 +170,29 @@ class CycleGAN:
 
     def fake_word_pool(self, num_fakes, fake, fake_pool):
         """
-        This function saves the generated image to corresponding
+        This function saves the generated word to corresponding
         pool of word.
 
         It keeps on feeling the pool till it is full and then randomly
         selects an already stored image and replace it with new one.
         """
+        print 
         if num_fakes < self._pool_size:
-            fake_pool[num_fakes] = fake
+            fake_pool[num_fakes,:,:] = fake
             return fake
         else:
             p = random.random()
             if p > 0.5:
                 random_id = random.randint(0, self._pool_size - 1)
-                temp = fake_pool[random_id]
-                fake_pool[random_id] = fake
+                temp = fake_pool[random_id,:,:]
+                fake_pool[random_id,:,:] = fake
                 return temp
             else:
                 return fake
 
     def run(self):
+        BATCH_SIZE=model.BATCH_SIZE
         """Training Function."""
-        # Load Dataset from the dataset folder
-        my_data_loader=data_loader.DataLoaderDisk_bi(self._train_dataset_name,True)
-        max_word = my_data_loader.num
 
         # Build the network
         self.model_setup()
@@ -227,7 +226,43 @@ class CycleGAN:
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(coord=coord)
 
+            def do_test():
+                my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,BATCH_SIZE,True)
+                max_word = my_data_loader.num
+                its = max_word//BATCH_SIZE+1
+
+                reslist= np.zeros([its*BATCH_SIZE,6,model.WORD_EMBED_DIM])
+                for i in range(its):
+                    input_a,input_b=my_data_loader.next_batch()
+                    fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp = sess.run([
+                        self.fake_word_a,
+                        self.fake_word_b,
+                        self.cycle_word_a,
+                        self.cycle_word_b
+                    ], feed_dict={
+                        self.input_a: input_a,
+                        self.input_b: input_b
+                    })
+
+                    reslist[BATCH_SIZE*i:BATCH_SIZE*(i+1),0,:]=input_a
+                    reslist[BATCH_SIZE*i:BATCH_SIZE*(i+1),1,:]=input_b
+                    reslist[BATCH_SIZE*i:BATCH_SIZE*(i+1),2,:]=fake_A_temp
+                    reslist[BATCH_SIZE*i:BATCH_SIZE*(i+1),3,:]=fake_B_temp
+                    reslist[BATCH_SIZE*i:BATCH_SIZE*(i+1),4,:]=cyc_A_temp
+                    reslist[BATCH_SIZE*i:BATCH_SIZE*(i+1),5,:]=cyc_B_temp
+                    
+                reslist=reslist[:max_word,:,:]
+
+                print ('Test accruacy')
+                print ('top1',evaluation(reslist[:,3],reslist[:,0],n_neighbors=1))
+                print ('top5',evaluation(reslist[:,2],reslist[:,1],n_neighbors=5))
+
             if self._do_train:
+                # Load Dataset from the dataset folder
+                my_data_loader=data_loader.DataLoaderDisk_bi(self._train_dataset_name,BATCH_SIZE,True)
+                max_word = my_data_loader.num
+                its = max_word//BATCH_SIZE+1
+
                 # Training Loop
                 for epoch in range(sess.run(self.global_step), self._max_step):
                     cur=time.time()
@@ -243,9 +278,9 @@ class CycleGAN:
 
                     # self.save_word(sess, epoch)
 
-                    for i in range(0, max_word):
-                        if i%100==0:
-                            print("Processing batch {}/{}".format(i, max_word))
+                    for i in range(0, its):
+                        if i%(its//10)==0:
+                            print("Processing batch {}/{}".format(i, its))
 
                         input_a,input_b=my_data_loader.next_batch()
                         # Optimizing the G_A network
@@ -314,34 +349,17 @@ class CycleGAN:
 
                         writer.flush()
                         self.num_fake_inputs += 1
+
+
                     sess.run(tf.assign(self.global_step, epoch + 1))
                     print(time.time()-cur,'s for 1 epoch')
+                    
+                    if self._do_test:
+                        do_test()
 
             if self._do_test:
-                my_data_loader = data_loader.DataLoaderDisk_bi(self._test_dataset_name,True)
-                max_word = my_data_loader.num
-
-                reslist=[]
-                for i in range(max_word):
-                    input_a,input_b=my_data_loader.next_batch()
-                    fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp = sess.run([
-                        self.fake_word_a,
-                        self.fake_word_b,
-                        self.cycle_word_a,
-                        self.cycle_word_b
-                    ], feed_dict={
-                        self.input_a: input_a,
-                        self.input_b: input_b
-                    })
-
-                    res = [input_a, input_b, fake_A_temp, fake_B_temp, cyc_A_temp, cyc_B_temp]
-                    reslist.append(np.array(res))
-                reslist=np.array(reslist)
-
-                print ('Test accruacy')
-                print (evaluation(reslist[:,3],reslist[:,0],n_neighbors=1))
-                print (evaluation(reslist[:,2],reslist[:,1],n_neighbors=1))
-
+                do_test()
+            
             coord.request_stop()
             coord.join(threads)
             writer.add_graph(sess.graph)

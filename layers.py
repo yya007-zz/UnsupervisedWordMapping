@@ -1,6 +1,13 @@
 from __future__ import print_function
 import tensorflow as tf
 
+def batch_norm_layer(x, train_phase, scope_bn):
+    return batch_norm(x, decay=0.9, center=True, scale=True,
+    updates_collections=None,
+    is_training=train_phase,
+    reuse=None,
+    trainable=True,
+    scope=scope_bn)
 
 def lrelu(x, leak=0.2, name="lrelu", alt_relu_impl=False):
 

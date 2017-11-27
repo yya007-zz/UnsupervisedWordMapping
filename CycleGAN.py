@@ -335,7 +335,7 @@ class CycleGAN:
                             }
                         )
                         writer.add_summary(summary_str, epoch * max_word + i)
-                        print(loss_g_a,loss_g_b,loss_d_a,loss_d_b)
+                        print(loss)
 
                         fake_A_temp1 = self.fake_word_pool(
                             self.num_fake_inputs, fake_A_temp, self.fake_word_A)

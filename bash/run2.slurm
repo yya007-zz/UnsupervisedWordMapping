@@ -10,4 +10,4 @@
 module load Anaconda2
 source activate FCN
 cd /scratch/yaoy4/UnsupervisedWordMapping/
-python  /scratch/yaoy4/UnsupervisedWordMapping/unsupervised.py --src_lang en --tgt_lang it --src_emb data/pretrained/en.vec --tgt_emb data/pretrained/it.vec
+python unsupervised.py --src_lang en --tgt_lang it --src_emb data/pretrained/en.vec --tgt_emb data/pretrained/it.vec

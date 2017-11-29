@@ -24,6 +24,7 @@ logger = getLogger()
 
 class Trainer(object):
 
+    # mapping is actually a single layer generator
     def __init__(self, src_emb, tgt_emb, mapping, discriminator, params):
         """
         Initialize trainer script.

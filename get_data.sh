@@ -24,6 +24,8 @@ mkdir -p "$DATA/embeddings/original"
 mkdir -p "$DATA/embeddings/unit"
 mkdir -p "$DATA/embeddings/unit-center"
 mkdir -p "$DATA/pretrained"
+mkdir -p "data/crosslingual"
+mkdir -p "data/crosslingual/dictionaries/"
 
 echo "Start to download pretrained datasets"
 FILE="$DATA/pretrained/en.vec"

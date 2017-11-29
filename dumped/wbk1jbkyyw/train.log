@@ -1,0 +1,51 @@
+INFO - 11/29/17 03:55:46 - 0:00:00 - ============ Initialized logger ============
+INFO - 11/29/17 03:55:46 - 0:00:00 - adversarial: True
+                                     batch_size: 32
+                                     cuda: False
+                                     dico_build: S2T&T2S
+                                     dico_max_rank: 15000
+                                     dico_max_size: 0
+                                     dico_method: csls_knn_10
+                                     dico_min_size: 0
+                                     dico_threshold: 0
+                                     dis_clip_weights: 0
+                                     dis_dropout: 0.0
+                                     dis_hid_dim: 2048
+                                     dis_input_dropout: 0.1
+                                     dis_lambda: 1
+                                     dis_layers: 2
+                                     dis_most_frequent: 75000
+                                     dis_optimizer: sgd,lr=0.1
+                                     dis_smooth: 0.1
+                                     dis_steps: 5
+                                     emb_dim: 300
+                                     epoch_size: 10000
+                                     exp_path: /Users/yuangyao/Documents/Research/UnsupervisedWordMapping/dumped/wbk1jbkyyw
+                                     export: True
+                                     lr_decay: 0.98
+                                     lr_shrink: 0.5
+                                     map_beta: 0.001
+                                     map_id_init: True
+                                     map_optimizer: sgd,lr=0.1
+                                     max_vocab: 200000
+                                     min_lr: 1e-06
+                                     n_epochs: 5
+                                     n_iters: 5
+                                     normalize_embeddings: 
+                                     refinement: False
+                                     seed: -1
+                                     src_emb: data/pretrained/en.vec
+                                     src_lang: en
+                                     tgt_emb: data/pretrained/it.vec
+                                     tgt_lang: it
+                                     verbose: 2
+INFO - 11/29/17 03:55:46 - 0:00:00 - The experiment will be stored in /Users/yuangyao/Documents/Research/UnsupervisedWordMapping/dumped/wbk1jbkyyw
+INFO - 11/29/17 03:56:14 - 0:00:28 - Loaded 200000 pre-trained word embeddings
+INFO - 11/29/17 03:56:42 - 0:00:56 - Loaded 200000 pre-trained word embeddings
+INFO - 11/29/17 03:56:47 - 0:01:01 - ----> ADVERSARIAL TRAINING <----
+                                     
+                                     
+INFO - 11/29/17 03:56:47 - 0:01:01 - Starting adversarial training epoch 0...
+INFO - 11/29/17 03:56:47 - 0:01:01 - 000000 - Discriminator loss: 0.6793 - 241 samples/s
+INFO - 11/29/17 03:57:10 - 0:01:24 - 004000 - Discriminator loss: 0.6090 - 341 samples/s
+INFO - 11/29/17 03:57:35 - 0:01:49 - 008000 - Discriminator loss: 0.5168 - 323 samples/s

@@ -17,6 +17,15 @@ For the word-similarity evaluation script you will need:
 * python 2.6 or newer
 * numpy & scipy
 * tensorflow 1.1 or newer
+Install PyTorch and dependencies from http://pytorch.org
+Install Torch vision from the source.
+```
+git clone https://github.com/pytorch/vision
+cd vision
+python setup.py install
+Install python libraries visdom and dominate.
+pip install visdom
+pip install dominate
 
 ### (Optional)Multi-threaded GIZA++
 

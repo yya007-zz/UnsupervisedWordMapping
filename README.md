@@ -60,5 +60,6 @@ python prepare_data.py
 * https://github.com/artetxem/vecmap
 * https://github.com/Babylonpartners/fastText_multilingual
 * https://github.com/moses-smt/mgiza.git
-
+* https://github.com/facebookresearch/MUSE
+* https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/models/cycle_gan_model.py
 

@@ -266,7 +266,7 @@ class CycleGAN:
 
             if self._do_train:
                 # Load Dataset from the dataset folder
-                my_data_loader=data_loader.DataLoaderDisk_bi(self._train_dataset_name,BATCH_SIZE,False)
+                my_data_loader=data_loader.DataLoaderDisk_bi(self._train_dataset_name,BATCH_SIZE,True)
                 max_word = my_data_loader.num
                 its = max_word//BATCH_SIZE+1
 

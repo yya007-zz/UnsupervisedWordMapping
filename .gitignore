@@ -1,6 +1,7 @@
 data/*
 log/*
 output/*
+dumped/*
 .DS_Store
 cmd.txt
 *.pyc

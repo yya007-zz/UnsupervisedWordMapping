@@ -18,19 +18,7 @@ For the word-similarity evaluation script you will need:
 * numpy & scipy
 * tensorflow 1.1 or newer
 
-### Building fastText
-
-In order to build `fastText`, use the following:
-
-```
-$ git clone https://github.com/facebookresearch/fastText.git
-$ cd fastText
-$ make
-```
-This will produce object files for all the classes as well as the main binary `fasttext`.
-If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
-
-### Multi-threaded GIZA++
+### (Optional)Multi-threaded GIZA++
 
 ```
 git clone https://github.com/moses-smt/mgiza.git
@@ -45,11 +33,11 @@ cp scripts/merge_alignment.py $BINDIR
 
 
 ## Usage
-
-### Dataset Preparation
 ```
 git clone https://github.com/yya007/UnsupervisedWordMapping.git
 cd UnsupervisedWordMapping
+```
+### Dataset Preparation
 ./get_data.sh
 python prepare_data.py
 ```

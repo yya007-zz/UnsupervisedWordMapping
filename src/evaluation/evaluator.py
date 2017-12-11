@@ -22,7 +22,7 @@ logger = getLogger()
 
 class Evaluator(object):
 
-    def __init__(self, trainer, direction):
+    def __init__(self, trainer, direction = True):
         """
         Initialize evaluator.
         """

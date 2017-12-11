@@ -73,7 +73,7 @@ parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embed
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
 
 parser.add_argument("--lambda_a", type=int, default=10, help="Lambda a")
-parser.add_argument("--lambda_b", type=int, default=10, help="Lambda ")
+parser.add_argument("--lambda_", type=int, default=10, help="Lambda ")
 
 # parse parameters
 params = parser.parse_args()

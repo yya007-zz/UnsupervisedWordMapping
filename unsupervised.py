@@ -118,8 +118,8 @@ if params.adversarial:
                 trainer.dis_step(stats2,False)
 
             # mapping training (discriminator fooling)
-            trainer.mapping_step(stats,True)
-            n_words_proc += trainer.mapping_step(stats,False)
+            trainer.mapping_step(stats1,True)
+            n_words_proc += trainer.mapping_step(stats2s,False)
 
             # log stats
             if n_iter % 500 == 0:

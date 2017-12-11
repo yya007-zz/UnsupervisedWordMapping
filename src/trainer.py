@@ -419,12 +419,12 @@ class Trainer_Cycle(object):
 
 
         src_emb = Variable(src_emb.data, volatile=volatile)
-        src_emb_cycle = self.mapping(True)(Variable(src_emb, volatile=volatile))
-        src_emb_cycle = self.mapping(True)(Variable(src_emb_cycle, volatile=volatile))
+        src_emb_cycle = self.mapping(True)(src_emb)
+        src_emb_cycle = self.mapping(True)(src_emb_cycle)
 
         tgt_emb = Variable(tgt_emb.data, volatile=volatile)
-        tgt_emb_cycle = self.mapping(True)(Variable(tgt_emb, volatile=volatile))
-        tgt_emb_cycle = self.mapping(True)(Variable(tgt_emb_cycle, volatile=volatile))
+        tgt_emb_cycle = self.mapping(True)(tgt_emb)
+        tgt_emb_cycle = self.mapping(True)(tgt_emb_cycle)
 
         return self.cycle_lambda(True)*consistency_loss(src_emb,src_emb_cycle)+self.cycle_lambda(False)*consistency_loss(tgt_emb,tgt_emb_cycle)
 

@@ -15,7 +15,7 @@ import torch
 
 from src.utils import bool_flag, initialize_exp
 from src.models import build_model
-from src.trainer import Trainer
+from src.trainer import Trainer, Trainer_Cycle
 from src.evaluation import Evaluator
 
 
@@ -72,6 +72,8 @@ parser.add_argument("--src_emb", type=str, default="", help="Reload source embed
 parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embeddings")
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
 
+parser.add_argument("--lambda_a", type=int, default=10, help="Lambda a")
+parser.add_argument("--lambda_a", type=int, default=10, help="Lambda ")
 
 # parse parameters
 params = parser.parse_args()
@@ -88,10 +90,10 @@ assert os.path.isfile(params.tgt_emb)
 
 # build model / trainer / evaluator
 logger = initialize_exp(params)
-src_emb, tgt_emb, mapping, discriminator = build_model(params, True)
-trainer = Trainer(src_emb, tgt_emb, mapping, discriminator, params)
-evaluator = Evaluator(trainer)
-
+src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2= build_model_cycle(params, True, True)
+trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2)
+evaluator1 = Evaluator(trainer, True)
+evaluator2 = Evaluator(trainer, False)
 
 """
 Learning loop for Adversarial Training
@@ -105,35 +107,56 @@ if params.adversarial:
         logger.info('Starting adversarial training epoch %i...' % n_epoch)
         tic = time.time()
         n_words_proc = 0
-        stats = {'DIS_COSTS': []}
+        stats1 = {'DIS_COSTS': []}
+        stats2 = {'DIS_COSTS': []}
 
         for n_iter in range(0, params.epoch_size, params.batch_size):
 
             # discriminator training
             for _ in range(params.dis_steps):
-                trainer.dis_step(stats)
+                trainer.dis_step(stats1,True)
+                trainer.dis_step(stats2,False)
 
             # mapping training (discriminator fooling)
-            n_words_proc += trainer.mapping_step(stats)
+            trainer.mapping_step(stats,True)
+            n_words_proc += trainer.mapping_step(stats,False)
 
             # log stats
             if n_iter % 500 == 0:
+                logger.info('Normal Direction:')
+                stats = stats1
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
+                for k, _ in stats_str:
+                    del stats1[k][:]
+
+                logger.info('Reverse Direction:')
+                stats = stats2
+                stats_str = [('DIS_COSTS', 'Discriminator loss')]
+                stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
+                             for k, v in stats_str if len(stats[k]) > 0]
+                stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
+                logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
+                for k, _ in stats_str:
+                    del stats2[k][:]
 
                 # reset
                 tic = time.time()
                 n_words_proc = 0
-                for k, _ in stats_str:
-                    del stats[k][:]
+                
 
         # embeddings / discriminator evaluation
         to_log = OrderedDict({'n_epoch': n_epoch})
-        evaluator.all_eval(to_log)
-        evaluator.eval_dis(to_log)
+        
+        logger.info('Normal Direction:')
+        evaluator1.all_eval(to_log)
+        evaluator1 .eval_dis(to_log)
+        logger.info('Reverse Direction:')
+        evaluator2.all_eval(to_log)
+        evaluator2.eval_dis(to_log)
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log))
@@ -142,7 +165,10 @@ if params.adversarial:
 
         # update the learning rate (stop if too small)
         trainer.update_lr(to_log, VALIDATION_METRIC)
-        if trainer.map_optimizer.param_groups[0]['lr'] < params.min_lr:
+        if trainer.map_optimizer(True).param_groups[0]['lr'] < params.min_lr:
+            logger.info('Learning rate < 1e-6. BREAK.')
+            break
+        if trainer.map_optimizer(False).param_groups[0]['lr'] < params.min_lr:
             logger.info('Learning rate < 1e-6. BREAK.')
             break
 

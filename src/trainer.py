@@ -272,14 +272,14 @@ class Trainer_Cycle(object):
         # optimizers
         if hasattr(params, 'map_optimizer'):
             optim_fn1, optim_params1 = get_optimizer(params.map_optimizer)
-            self.map_optimizer1 = optim_fn(mapping1.parameters(), **optim_params1)
+            self.map_optimizer1 = optim_fn1(mapping1.parameters(), **optim_params1)
             optim_fn2, optim_params2 = get_optimizer(params.map_optimizer)
-            self.map_optimizer2 = optim_fn(mapping2.parameters(), **optim_params2)
+            self.map_optimizer2 = optim_fn2(mapping2.parameters(), **optim_params2)
         if hasattr(params, 'dis_optimizer'):
             optim_fn1, optim_params1 = get_optimizer(params.dis_optimizer)
-            self.dis_optimizer1 = optim_fn(discriminator1.parameters(), **optim_params1)
+            self.dis_optimizer1 = optim_fn1(discriminator1.parameters(), **optim_params1)
             optim_fn2, optim_params2 = get_optimizer(params.dis_optimizer)
-            self.dis_optimizer2 = optim_fn(discriminator2.parameters(), **optim_params2)
+            self.dis_optimizer2 = optim_fn2(discriminator2.parameters(), **optim_params2)
         else:
             assert discriminator1 is None
             assert discriminator2 is None

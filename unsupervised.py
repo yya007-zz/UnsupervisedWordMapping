@@ -14,7 +14,7 @@ import numpy as np
 import torch
 
 from src.utils import bool_flag, initialize_exp
-from src.models import build_model
+from src.models import build_model, build_model_cycle
 from src.trainer import Trainer, Trainer_Cycle
 from src.evaluation import Evaluator
 

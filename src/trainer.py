@@ -299,12 +299,12 @@ class Trainer_Cycle(object):
             return self.discriminator1;
         return self.discriminator2
 
-     def mapping(self, direction = True):
+    def mapping(self, direction = True):
         if direction:
             return self.mapping1;
         return self.mapping2
 
-     def map_optimizer(self, direction = True):
+    def map_optimizer(self, direction = True):
         if direction:
             return self.map_optimizer1;
         return self.map_optimizer2

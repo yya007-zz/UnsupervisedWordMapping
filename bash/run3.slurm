@@ -6,9 +6,8 @@
 #SBATCH --ntasks=2
 #SBATCH --mem=40G
 #SBATCH --time=120:00:00
-#SBATCH --output=/scratch/yaoy4/SceneClassification/log/run3.log
+#SBATCH --output=/scratch/yaoy4/UnsupervisedWordMapping/log/run.log
 module load Anaconda2
 source activate FCN
-setpkgs -a tensorflow_0.12
-cd /scratch/yaoy4/SceneClassification/
-python  /scratch/yaoy4/SceneClassification/main.py exp exp3
+cd /scratch/yaoy4/UnsupervisedWordMapping/
+python unsupervised_single.py --n_epochs 10 --src_lang it --tgt_lang en --src_emb data/pretrained/it.vec --tgt_emb data/pretrained/en.vec --refinement True

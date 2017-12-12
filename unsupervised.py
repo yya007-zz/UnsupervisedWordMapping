@@ -12,6 +12,7 @@ import argparse
 from collections import OrderedDict
 import numpy as np
 import torch
+from copy import deepcopy
 
 from src.utils import bool_flag, initialize_exp
 from src.models import build_model, build_model_cycle

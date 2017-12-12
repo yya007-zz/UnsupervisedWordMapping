@@ -124,7 +124,7 @@ if params.adversarial:
 
             # discriminator training
             for _ in range(params.dis_steps):
-                trainer.dis_step(stats1,True)
+                trainer.dis_step(stats1,False)
                 trainer.dis_step(stats2,False)
 
             # mapping training (discriminator fooling)

@@ -402,7 +402,7 @@ class Trainer_Cycle(object):
         return 2 * self.params.batch_size
 
     def consistency_loss(self, real, cycle):
-        return F.L1Loss(real,cycle)
+        return torch.nn.L1Loss(real,cycle)
 
     def total_consistency_loss(self, volatile):
         bs = 2*self.params.batch_size

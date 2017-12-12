@@ -18,7 +18,7 @@ from src.models import build_model, build_model_cycle
 from src.trainer import Trainer
 from src.trainer_Cycle import  Trainer_Cycle
 from src.evaluation import Evaluator
-
+from src.evaluation import Evaluator_Cycle
 
 VALIDATION_METRIC = 'mean_cosine-csls_knn_10-S2T-10000'
 
@@ -79,6 +79,13 @@ parser.add_argument("--lambda_b", type=int, default=10, help="Lambda ")
 # parse parameters
 params = parser.parse_args()
 
+params1 = params
+params2 = deepcopy(params1)
+params2.src_emb = deepcopy(params1.tgt_emb) 
+params2.tgt_emb = deepcopy(params1.src_emb)
+params2.src_lang = deepcopy(params1.tgt_lang)
+params2.tgt_lang = deepcopy(params1.src_lang)
+
 # check parameters
 assert not params.cuda or torch.cuda.is_available()
 assert 0 <= params.dis_dropout < 1
@@ -93,8 +100,9 @@ assert os.path.isfile(params.tgt_emb)
 logger = initialize_exp(params)
 src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2= build_model_cycle(params, True, True)
 trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2, params)
-evaluator1 = Evaluator(trainer, True, True)
-evaluator2 = Evaluator(trainer, True, False)
+
+evaluator1 = Evaluator_Cycle(trainer, params1)
+evaluator2 = Evaluator_Cycle(trainer, params2)
 
 """
 Learning loop for Adversarial Training
@@ -188,18 +196,28 @@ if params.refinement:
         logger.info('Starting refinement iteration %i...' % n_iter)
 
         # build a dictionary from aligned embeddings
-        trainer.build_dictionary()
+        trainer.build_dictionary(True)
 
         # apply the Procrustes solution
         trainer.procrustes(True)
-        trainer.procrustes(False)
 
         # embeddings evaluation
         to_log = OrderedDict({'n_iter': n_iter})
         
         logger.info('Normal Direction:')
         evaluator1.all_eval(to_log)
-        evaluator1 .eval_dis(to_log)
+        evaluator1.eval_dis(to_log)
+
+
+         # build a dictionary from aligned embeddings
+        trainer.build_dictionary(False)
+
+        # apply the Procrustes solution
+        trainer.procrustes(False)
+
+        # embeddings evaluation
+        to_log = OrderedDict({'n_iter': n_iter})
+        
         logger.info('Reverse Direction:')
         evaluator2.all_eval(to_log)
         evaluator2.eval_dis(to_log)

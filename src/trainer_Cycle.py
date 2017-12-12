@@ -225,8 +225,13 @@ class Trainer_Cycle(object):
         """
         Build a dictionary from aligned embeddings.
         """
-        src_emb = self.mapping(direction)(self.src_emb.weight).data
-        tgt_emb = self.tgt_emb.weight.data
+        if direction:
+            src_emb = self.mapping(direction)(self.src_emb.weight).data
+            tgt_emb = self.tgt_emb.weight.data
+        else:
+            src_emb = self.src_emb.weight.data
+            tgt_emb = self.mapping(direction)(self.tgt_emb.weight).data
+            
         src_emb = src_emb / src_emb.norm(2, 1, keepdim=True).expand_as(src_emb)
         tgt_emb = tgt_emb / tgt_emb.norm(2, 1, keepdim=True).expand_as(tgt_emb)
         self.dico = build_dictionary(src_emb, tgt_emb, self.params)

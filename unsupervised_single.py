@@ -74,6 +74,7 @@ parser.add_argument("--normalize_embeddings", type=str, default="", help="Normal
 
 
 # parse parameters
+
 params = parser.parse_args()
 
 # check parameters

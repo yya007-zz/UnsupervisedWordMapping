@@ -194,7 +194,13 @@ if params.refinement:
 
         # embeddings evaluation
         to_log = OrderedDict({'n_iter': n_iter})
-        evaluator.all_eval(to_log)
+        
+        logger.info('Normal Direction:')
+        evaluator1.all_eval(to_log)
+        evaluator1 .eval_dis(to_log)
+        logger.info('Reverse Direction:')
+        evaluator2.all_eval(to_log)
+        evaluator2.eval_dis(to_log)
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log))

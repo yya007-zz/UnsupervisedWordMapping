@@ -122,6 +122,10 @@ class Trainer_Cycle(object):
         return x, y
 
     def dis_step(self, stats, direction=True):
+        if direction:
+            print("dis step 1")
+        else:
+            print("dis step 2")
         """
         Train the discriminator.
         """

@@ -22,7 +22,7 @@ logger = getLogger()
 
 class Evaluator(object):
 
-    def __init__(self, trainer, direction = True):
+    def __init__(self, trainer, cycle = False, direction = True):
         """
         Initialize evaluator.
         """
@@ -31,19 +31,20 @@ class Evaluator(object):
             self.tgt_emb = trainer.tgt_emb
             self.src_dico = trainer.src_dico
             self.tgt_dico = trainer.tgt_dico
-            self.mapping = trainer.mapping
-            self.discriminator = trainer.discriminator
-            self.params = trainer.params
         else:
             self.tgt_emb = trainer.src_emb
             self.src_emb = trainer.tgt_emb
             self.tgt_dico = trainer.src_dico
             self.src_dico = trainer.tgt_dico
 
+        if cycle:
             self.mapping = trainer.mapping(direction)
             self.discriminator = trainer.discriminator(direction)
-            self.params = trainer.params           
+        else:
+            self.mapping = trainer.mapping
+            self.discriminator = trainer.discriminator
 
+        self.params = trainer.params
 
     def monolingual_wordsim(self, to_log):
         """

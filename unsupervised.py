@@ -92,8 +92,8 @@ assert os.path.isfile(params.tgt_emb)
 logger = initialize_exp(params)
 src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2= build_model_cycle(params, True, True)
 trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2, params)
-evaluator1 = Evaluator(trainer, True)
-evaluator2 = Evaluator(trainer, False)
+evaluator1 = Evaluator(trainer, True, True)
+evaluator2 = Evaluator(trainer, True, False)
 
 """
 Learning loop for Adversarial Training

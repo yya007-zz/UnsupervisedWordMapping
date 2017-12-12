@@ -15,7 +15,8 @@ import torch
 
 from src.utils import bool_flag, initialize_exp
 from src.models import build_model, build_model_cycle
-from src.trainer import Trainer, Trainer_Cycle
+from src.trainer import Trainer
+from src.trainer_Cycle import  Trainer_Cycle
 from src.evaluation import Evaluator
 
 
@@ -190,7 +191,8 @@ if params.refinement:
         trainer.build_dictionary()
 
         # apply the Procrustes solution
-        trainer.procrustes()
+        trainer.procrustes(True)
+        trainer.procrustes(False)
 
         # embeddings evaluation
         to_log = OrderedDict({'n_iter': n_iter})

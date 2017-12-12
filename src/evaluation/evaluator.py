@@ -44,7 +44,13 @@ class Evaluator(object):
             self.mapping = trainer.mapping
             self.discriminator = trainer.discriminator
 
-        self.params = trainer.params
+        self.params = deepcopy(trainer.params)
+        
+        if not direction:
+            temp=self.params.tgt_lang
+            self.params.tgt_lang=self.params.src_lang
+            self.params.src_lang=temp
+
 
     def monolingual_wordsim(self, to_log):
         """

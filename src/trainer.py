@@ -562,7 +562,7 @@ class Trainer_Cycle(object):
         """
         Export embeddings to a text file.
         """
-        src_emb = self.mapping(self.src_emb.weight).data
+        src_emb = self.mapping(True)(self.src_emb.weight).data
         tgt_emb = self.tgt_emb.weight.data
         src_emb = src_emb / src_emb.norm(2, 1, keepdim=True).expand_as(src_emb)
         tgt_emb = tgt_emb / tgt_emb.norm(2, 1, keepdim=True).expand_as(tgt_emb)

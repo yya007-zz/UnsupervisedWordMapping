@@ -531,8 +531,8 @@ class Trainer_Cycle(object):
             self.best_valid_metric = to_log[metric]
             logger.info('* Best value for "%s": %.5f' % (metric, to_log[metric]))
      
-            self.save_best_single(self, to_log, metric, True)
-            self.save_best_single(self, to_log, metric, False)
+            self.save_best_single(to_log, metric, True)
+            self.save_best_single(to_log, metric, False)
 
     def save_best_single(self, to_log, metric, direction=True):
         # save the mapping
@@ -542,8 +542,8 @@ class Trainer_Cycle(object):
         torch.save(W, path)
 
     def reload_best(self):
-        self.reload_best_single(self, True)
-        self.reload_best_single(self, False)
+        self.reload_best_single(True)
+        self.reload_best_single(False)
 
     def reload_best_single(self, direction=True):
         """

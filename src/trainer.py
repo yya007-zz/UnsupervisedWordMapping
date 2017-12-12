@@ -418,14 +418,14 @@ class Trainer_Cycle(object):
         src_emb = Variable(src_emb.data, volatile=volatile)
         src_emb_cycle = self.mapping(True)(src_emb)
         src_emb_cycle = self.mapping(True)(src_emb_cycle)
-        loss_A=self.cycle_lambda(True)*torch.nn.L1Loss(src_emb,src_emb_cycle)
+        loss_A = torch.nn.L1Loss(src_emb,src_emb_cycle)
 
         tgt_emb = Variable(tgt_emb.data, volatile=volatile)
         tgt_emb_cycle = self.mapping(True)(tgt_emb)
         tgt_emb_cycle = self.mapping(True)(tgt_emb_cycle)
-        loss_B=self.cycle_lambda(False)*torch.nn.L1Loss(tgt_emb,tgt_emb_cycle)
+        loss_B = torch.nn.L1Loss(tgt_emb,tgt_emb_cycle)
 
-        return loss_A+loss_B
+        return self.cycle_lambda(True)*loss_A+self.cycle_lambda(False)*loss_B
 
     def load_training_dico(self, dico_train):
         """

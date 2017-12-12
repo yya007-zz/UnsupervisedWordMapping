@@ -401,9 +401,6 @@ class Trainer_Cycle(object):
 
         return 2 * self.params.batch_size
 
-    def consistency_loss(self, real, cycle):
-        return torch.nn.L1Loss(real,cycle)
-
     def total_consistency_loss(self, volatile):
         bs = 2*self.params.batch_size
         mf = self.params.dis_most_frequent
@@ -421,12 +418,14 @@ class Trainer_Cycle(object):
         src_emb = Variable(src_emb.data, volatile=volatile)
         src_emb_cycle = self.mapping(True)(src_emb)
         src_emb_cycle = self.mapping(True)(src_emb_cycle)
+        loss_A=self.cycle_lambda(True)*torch.nn.L1Loss(src_emb,src_emb_cycle)
 
         tgt_emb = Variable(tgt_emb.data, volatile=volatile)
         tgt_emb_cycle = self.mapping(True)(tgt_emb)
         tgt_emb_cycle = self.mapping(True)(tgt_emb_cycle)
+        loss_B=self.cycle_lambda(False)*torch.nn.L1Loss(tgt_emb,tgt_emb_cycle)
 
-        return self.cycle_lambda(True)*self.consistency_loss(src_emb,src_emb_cycle)+self.cycle_lambda(False)*self.consistency_loss(tgt_emb,tgt_emb_cycle)
+        return loss_A+loss_B
 
     def load_training_dico(self, dico_train):
         """

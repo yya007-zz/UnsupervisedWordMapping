@@ -22,7 +22,7 @@ logger = getLogger()
 
 class Evaluator_Cycle(object):
 
-    def __init__(self, trainer, direction = True):
+    def __init__(self, trainer, params, direction):
         """
         Initialize evaluator.
         """
@@ -40,7 +40,7 @@ class Evaluator_Cycle(object):
         self.mapping = trainer.mapping(direction)
         self.discriminator = trainer.discriminator(direction)
 
-        self.params = deepcopy(trainer.params)
+        self.params = params
 
     def monolingual_wordsim(self, to_log):
         """

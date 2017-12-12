@@ -101,8 +101,8 @@ logger = initialize_exp(params)
 src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2= build_model_cycle(params, True, True)
 trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2, params)
 
-evaluator1 = Evaluator_Cycle(trainer, params1)
-evaluator2 = Evaluator_Cycle(trainer, params2)
+evaluator1 = Evaluator_Cycle(trainer, params1, True)
+evaluator2 = Evaluator_Cycle(trainer, params2, False)
 
 """
 Learning loop for Adversarial Training
@@ -217,7 +217,7 @@ if params.refinement:
 
         # embeddings evaluation
         to_log = OrderedDict({'n_iter': n_iter})
-        
+
         logger.info('Reverse Direction:')
         evaluator2.all_eval(to_log)
         evaluator2.eval_dis(to_log)

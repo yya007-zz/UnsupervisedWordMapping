@@ -65,12 +65,16 @@ class Trainer_Cycle(object):
 
     def discriminator(self, direction = True):
         if direction:
-            return self.discriminator1;
+            print('using dis1')
+            return self.discriminator1
+        print('using dis2')
         return self.discriminator2
 
     def mapping(self, direction = True):
         if direction:
+            print('using map1')
             return self.mapping1;
+        print('using map2')
         return self.mapping2
 
     def map_optimizer(self, direction = True):
@@ -231,7 +235,7 @@ class Trainer_Cycle(object):
         else:
             src_emb = self.src_emb.weight.data
             tgt_emb = self.mapping(direction)(self.tgt_emb.weight).data
-            
+
         src_emb = src_emb / src_emb.norm(2, 1, keepdim=True).expand_as(src_emb)
         tgt_emb = tgt_emb / tgt_emb.norm(2, 1, keepdim=True).expand_as(tgt_emb)
         self.dico = build_dictionary(src_emb, tgt_emb, self.params)

@@ -177,8 +177,12 @@ class Trainer_Cycle(object):
         
         map_loss = F.binary_cross_entropy(preds, 1 - y)
         loss = self.params.dis_lambda * map_loss
+        stats['GAN_COSTS'].append(loss.data[0])
+        cycloss=self.total_consistency_loss(volatile=False)
+        stats['CYC_COSTS'].append(cycloss.data[0])
         # print(map_loss)
-        loss = loss + self.total_consistency_loss(volatile=False)
+        loss = loss +cycloss
+        
         # print(loss)
         # check NaN
         if (loss != loss).data.any():
@@ -216,12 +220,12 @@ class Trainer_Cycle(object):
 
         src_emb = Variable(src_emb.data, volatile=volatile)
         src_emb_cycle = self.mapping(True)(src_emb)
-        src_emb_cycle = self.mapping(True)(src_emb_cycle)
+        src_emb_cycle = self.mapping(False)(src_emb_cycle)
         loss_A = F.l1_loss(src_emb,src_emb_cycle)
 
         tgt_emb = Variable(tgt_emb.data, volatile=volatile)
         tgt_emb_cycle = self.mapping(False)(tgt_emb)
-        tgt_emb_cycle = self.mapping(False)(tgt_emb_cycle)
+        tgt_emb_cycle = self.mapping(True)(tgt_emb_cycle)
         loss_B = F.l1_loss(tgt_emb,tgt_emb_cycle)
 
         return self.cycle_lambda(True)*loss_A+self.cycle_lambda(False)*loss_B

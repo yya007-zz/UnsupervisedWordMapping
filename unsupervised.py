@@ -138,9 +138,18 @@ if params.adversarial:
             if n_iter % 500 == 0:
                 logger.info('Normal Direction:')
                 stats = stats1
+
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]
+                stats_str = [('GAN_COSTS', 'Map loss')]
+                stats_log2 = ['%s: %.4f' % (v, np.mean(stats[k]))
+                             for k, v in stats_str if len(stats[k]) > 0]
+                stats_str = [('CYC_COSTS', 'Cycle loss')]
+                stats_log3 = ['%s: %.4f' % (v, np.mean(stats[k]))
+                             for k, v in stats_str if len(stats[k]) > 0]
+                stats_log.append(stats_log2)
+                stats_log.append(stats_log3)
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:
@@ -148,9 +157,18 @@ if params.adversarial:
 
                 logger.info('Reverse Direction:')
                 stats = stats2
+                
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]
+                stats_str = [('GAN_COSTS', 'Map loss')]
+                stats_log2 = ['%s: %.4f' % (v, np.mean(stats[k]))
+                             for k, v in stats_str if len(stats[k]) > 0]
+                stats_str = [('CYC_COSTS', 'Cycle loss')]
+                stats_log3 = ['%s: %.4f' % (v, np.mean(stats[k]))
+                             for k, v in stats_str if len(stats[k]) > 0]
+                stats_log.append(stats_log2)
+                stats_log.append(stats_log3)
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:

@@ -151,10 +151,10 @@ class Trainer_Cycle(object):
     def mapping_step(self, stats, direction=True):
         if direction:
             print("----map normal")
-            print self.mapping(direction).weight.data
+            print(self.mapping(direction).weight.data)
         else:
             print("----map reverse")
-            print self.mapping(direction).weight.data
+            print(self.mapping(direction).weight.data)
         """
         Fooling discriminator training step.
         """

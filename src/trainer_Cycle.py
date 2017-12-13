@@ -60,37 +60,37 @@ class Trainer_Cycle(object):
 
         self.decrease_lr = False
 
-    def cycle_lambda(self, direction = True):
+    def cycle_lambda(self, direction):
         if direction:
             return self.params.lambda_a
         return self.params.lambda_b
 
-    def discriminator(self, direction = True):
+    def discriminator(self, direction):
         if direction:
             # print('using dis1')
             return self.discriminator1
         # print('using dis2')
         return self.discriminator2
 
-    def mapping(self, direction = True):
+    def mapping(self, direction):
         if direction:
             # print('using map1')
             return self.mapping1;
         # print('using map2')
         return self.mapping2
 
-    def map_optimizer(self, direction = True):
+    def map_optimizer(self, direction):
         if direction:
             return self.map_optimizer1;
         return self.map_optimizer2
 
-    def dis_optimizer(self, direction = True):
+    def dis_optimizer(self, direction):
         if direction:
             return self.dis_optimizer1;
         return self.dis_optimizer2
 
 
-    def get_dis_xy(self, volatile, direction = True):
+    def get_dis_xy(self, volatile, direction):
         """
         Get discriminator input batch / output target.
         """
@@ -123,7 +123,7 @@ class Trainer_Cycle(object):
 
         return x, y
 
-    def dis_step(self, stats, direction=True):
+    def dis_step(self, stats, direction):
         # if direction:
         #     print("----dis normal")
         # else:
@@ -152,7 +152,7 @@ class Trainer_Cycle(object):
         self.dis_optimizer(direction).step()
         clip_parameters(self.discriminator(direction), self.params.dis_clip_weights)
 
-    def mapping_step(self, stats, direction=True):
+    def mapping_step(self, stats, direction):
         # if direction:
         #     print("----map normal")
         # else:
@@ -249,7 +249,7 @@ class Trainer_Cycle(object):
         if self.params.cuda:
             self.dico = self.dico.cuda()
 
-    def build_dictionary(self, direction= True):
+    def build_dictionary(self, direction):
         """
         Build a dictionary from aligned embeddings.
         """
@@ -264,7 +264,7 @@ class Trainer_Cycle(object):
         tgt_emb = tgt_emb / tgt_emb.norm(2, 1, keepdim=True).expand_as(tgt_emb)
         self.dico = build_dictionary(src_emb, tgt_emb, self.params)
 
-    def procrustes(self, direction = True):
+    def procrustes(self, direction):
         """
         Find the best orthogonal matrix mapping using the Orthogonal Procrustes problem
         https://en.wikipedia.org/wiki/Orthogonal_Procrustes_problem
@@ -280,7 +280,7 @@ class Trainer_Cycle(object):
         U, S, V_t = scipy.linalg.svd(M, full_matrices=True)
         W.copy_(torch.from_numpy(U.dot(V_t)).type_as(W))
 
-    def orthogonalize(self, direction=True):
+    def orthogonalize(self, direction):
         """
         Orthogonalize the mapping.
         """
@@ -340,7 +340,7 @@ class Trainer_Cycle(object):
             self.save_best_single(to_log, metric, True)
             self.save_best_single(to_log, metric, False)
 
-    def save_best_single(self, to_log, metric, direction=True):
+    def save_best_single(self, to_log, metric, direction):
         # save the mapping
         W = self.mapping(direction).weight.data.cpu().numpy()
         path = os.path.join(self.params.exp_path, 'best_mapping_'+str(direction)+'.t7')
@@ -351,7 +351,7 @@ class Trainer_Cycle(object):
         self.reload_best_single(True)
         self.reload_best_single(False)
 
-    def reload_best_single(self, direction=True):
+    def reload_best_single(self, direction):
         """
         Reload the best mapping.
         """

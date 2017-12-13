@@ -123,9 +123,9 @@ class Trainer_Cycle(object):
 
     def dis_step(self, stats, direction=True):
         if direction:
-            print("dis step 1")
+            print("----dis normal")
         else:
-            print("dis step 2")
+            print("----dis reverse")
         """
         Train the discriminator.
         """
@@ -149,6 +149,12 @@ class Trainer_Cycle(object):
         clip_parameters(self.discriminator(direction), self.params.dis_clip_weights)
 
     def mapping_step(self, stats, direction=True):
+        if direction:
+            print("----map normal")
+            print self.mapping(direction).weight.data
+        else:
+            print("----map reverse")
+            print self.mapping(direction).weight.data
         """
         Fooling discriminator training step.
         """

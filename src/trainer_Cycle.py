@@ -182,6 +182,13 @@ class Trainer_Cycle(object):
         self.map_optimizer(direction).step()
         self.orthogonalize(direction)
 
+        if direction:
+            print("----map normal")
+            print(self.mapping(direction).weight.data)
+        else:
+            print("----map reverse")
+            print(self.mapping(direction).weight.data)
+            
         return 2 * self.params.batch_size
 
     def total_consistency_loss(self, volatile):

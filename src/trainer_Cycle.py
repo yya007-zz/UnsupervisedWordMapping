@@ -31,7 +31,9 @@ class Trainer_Cycle(object):
         self.src_emb = src_emb
         self.tgt_emb = tgt_emb
         self.src_dico = params.src_dico
+        print (self.src_dico)
         self.tgt_dico = getattr(params, 'tgt_dico', None)
+        print (self.tgt_dico)
         self.mapping1 = mapping1
         self.mapping2 = mapping2
         self.discriminator1 = discriminator1
@@ -158,7 +160,7 @@ class Trainer_Cycle(object):
 
         # print(self.mapping(True).weight.data)
         # print(self.mapping(False).weight.data)
-        
+
         """
         Fooling discriminator training step.
         """

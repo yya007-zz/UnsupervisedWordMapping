@@ -65,16 +65,16 @@ class Trainer_Cycle(object):
 
     def discriminator(self, direction = True):
         if direction:
-            print('using dis1')
+            # print('using dis1')
             return self.discriminator1
-        print('using dis2')
+        # print('using dis2')
         return self.discriminator2
 
     def mapping(self, direction = True):
         if direction:
-            print('using map1')
+            # print('using map1')
             return self.mapping1;
-        print('using map2')
+        # print('using map2')
         return self.mapping2
 
     def map_optimizer(self, direction = True):

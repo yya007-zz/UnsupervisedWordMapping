@@ -31,9 +31,9 @@ class Trainer_Cycle(object):
         self.src_emb = src_emb
         self.tgt_emb = tgt_emb
         self.src_dico = params.src_dico
-        print (self.src_dico)
+        # print (self.src_dico)
         self.tgt_dico = getattr(params, 'tgt_dico', None)
-        print (self.tgt_dico)
+        # print (self.tgt_dico)
         self.mapping1 = mapping1
         self.mapping2 = mapping2
         self.discriminator1 = discriminator1
@@ -110,12 +110,14 @@ class Trainer_Cycle(object):
         if direction:
             src_emb = self.mapping(direction)(Variable(src_emb.data, volatile=volatile))
             tgt_emb = Variable(tgt_emb.data, volatile=volatile)
+            x = torch.cat([src_emb, tgt_emb], 0)
         else:
-            src_emb = self.mapping(direction)(Variable(tgt_emb.data, volatile=volatile))
-            tgt_emb = Variable(src_emb.data, volatile=volatile)
+            src_emb = Variable(src_emb.data, volatile=volatile)
+            tgt_emb = self.mapping(direction)(Variable(tgt_emb.data, volatile=volatile))
+            x = torch.cat([tgt_emb, src_emb], 0)
 
         # input / target
-        x = torch.cat([src_emb, tgt_emb], 0)
+       
         y = torch.FloatTensor(2 * bs).zero_()
         y[:bs] = 1 - self.params.dis_smooth
         y[bs:] = self.params.dis_smooth

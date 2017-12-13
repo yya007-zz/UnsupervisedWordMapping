@@ -117,8 +117,8 @@ if params.adversarial:
         logger.info('Starting adversarial training epoch %i...' % n_epoch)
         tic = time.time()
         n_words_proc = 0
-        stats1 = {'DIS_COSTS': []}
-        stats2 = {'DIS_COSTS': []}
+        stats1 = {'DIS_COSTS': [],'GAN_COSTS':[],'CYC_COSTS':[]}
+        stats2 = {'DIS_COSTS': [],'GAN_COSTS':[],'CYC_COSTS':[]}
 
         for n_iter in range(0, params.epoch_size, params.batch_size):
 
@@ -157,7 +157,7 @@ if params.adversarial:
 
                 logger.info('Reverse Direction:')
                 stats = stats2
-                
+
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]

@@ -148,8 +148,8 @@ if params.adversarial:
                 stats_str = [('CYC_COSTS', 'Cycle loss')]
                 stats_log3 = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]
-                stats_log.append(stats_log2)
-                stats_log.append(stats_log3)
+                stats_log.append(stats_log2[0])
+                stats_log.append(stats_log3[0])
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:

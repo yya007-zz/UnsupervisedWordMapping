@@ -178,7 +178,7 @@ class Trainer_Cycle(object):
         map_loss = F.binary_cross_entropy(preds, 1 - y)
         loss = self.params.dis_lambda * map_loss
         # print(map_loss)
-        # loss = loss + self.total_consistency_loss(volatile=False)
+        loss = loss + self.total_consistency_loss(volatile=False)
         # print(loss)
         # check NaN
         if (loss != loss).data.any():

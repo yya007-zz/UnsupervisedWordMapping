@@ -135,6 +135,8 @@ class Trainer_Cycle(object):
         x, y = self.get_dis_xy(volatile=True, direction=direction)
         preds = self.discriminator(direction)(Variable(x.data))
         loss = F.binary_cross_entropy(preds, y)
+        print loss.data[0]
+
         stats['DIS_COSTS'].append(loss.data[0])
 
         # check NaN
@@ -149,12 +151,12 @@ class Trainer_Cycle(object):
         clip_parameters(self.discriminator(direction), self.params.dis_clip_weights)
 
     def mapping_step(self, stats, direction=True):
-        if direction:
-            print("----map normal")
-            print(self.mapping(direction).weight.data)
-        else:
-            print("----map reverse")
-            print(self.mapping(direction).weight.data)
+        # if direction:
+        #     print("----map normal")
+        #     print(self.mapping(direction).weight.data)
+        # else:
+        #     print("----map reverse")
+        #     print(self.mapping(direction).weight.data)
         """
         Fooling discriminator training step.
         """
@@ -182,13 +184,13 @@ class Trainer_Cycle(object):
         self.map_optimizer(direction).step()
         self.orthogonalize(direction)
 
-        if direction:
-            print("----map normal")
-            print(self.mapping(direction).weight.data)
-        else:
-            print("----map reverse")
-            print(self.mapping(direction).weight.data)
-            
+        # if direction:
+        #     print("----map normal")
+        #     print(self.mapping(direction).weight.data)
+        # else:
+        #     print("----map reverse")
+        #     print(self.mapping(direction).weight.data)
+
         return 2 * self.params.batch_size
 
     def total_consistency_loss(self, volatile):

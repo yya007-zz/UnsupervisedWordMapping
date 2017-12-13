@@ -122,10 +122,10 @@ class Trainer_Cycle(object):
         return x, y
 
     def dis_step(self, stats, direction=True):
-        if direction:
-            print("----dis normal")
-        else:
-            print("----dis reverse")
+        # if direction:
+        #     print("----dis normal")
+        # else:
+        #     print("----dis reverse")
         """
         Train the discriminator.
         """
@@ -135,7 +135,7 @@ class Trainer_Cycle(object):
         x, y = self.get_dis_xy(volatile=True, direction=direction)
         preds = self.discriminator(direction)(Variable(x.data))
         loss = F.binary_cross_entropy(preds, y)
-        print loss.data[0]
+        # print loss.data[0]
 
         stats['DIS_COSTS'].append(loss.data[0])
 
@@ -171,9 +171,9 @@ class Trainer_Cycle(object):
         
         map_loss = F.binary_cross_entropy(preds, 1 - y)
         map_loss = self.params.dis_lambda * map_loss
-        print(map_loss)
+        # print(map_loss)
         loss = map_loss + self.total_consistency_loss(volatile=False)
-        print(loss)
+        # print(loss)
         # check NaN
         if (loss != loss).data.any():
             logger.error("NaN detected (fool discriminator)")

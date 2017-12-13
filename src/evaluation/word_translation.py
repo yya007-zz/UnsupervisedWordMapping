@@ -46,7 +46,10 @@ def load_dictionary(path, word2id1, word2id2):
     loader dictionary, and sort it by source word frequency.
     """
     if(not os.path.isfile(path)):
+        logger.info(path,'is not exists')
+    else:
         logger.info(path)
+
     assert os.path.isfile(path)
 
     pairs = []

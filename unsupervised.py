@@ -116,8 +116,7 @@ if params.adversarial:
 
         logger.info('Starting adversarial training epoch %i...' % n_epoch)
         tic = time.time()
-        n_words_proc1 = 0
-        n_words_proc2 = 0
+        n_words_proc = 0
         stats1 = {'DIS_COSTS': []}
         stats2 = {'DIS_COSTS': []}
 
@@ -125,12 +124,15 @@ if params.adversarial:
 
             # discriminator training
             for _ in range(params.dis_steps):
-                trainer.dis_step(stats1,True)
                 trainer.dis_step(stats2,False)
+                trainer.dis_step(stats1,True)
+                
 
             # mapping training (discriminator fooling)
-            n_words_proc1 += trainer.mapping_step(stats1,True)
-            n_words_proc2 += trainer.mapping_step(stats2,False)
+            trainer.mapping_step(stats2,False)
+            trainer.mapping_step(stats1,True)
+            
+            n_words_proc += 2*params.batch_size
 
             # log stats
             if n_iter % 500 == 0:
@@ -139,7 +141,7 @@ if params.adversarial:
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]
-                stats_log.append('%i samples/s' % int(n_words_proc1 / (time.time() - tic)))
+                stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:
                     del stats1[k][:]
@@ -149,7 +151,7 @@ if params.adversarial:
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]
-                stats_log.append('%i samples/s' % int(n_words_proc2 / (time.time() - tic)))
+                stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:
                     del stats2[k][:]

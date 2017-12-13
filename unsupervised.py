@@ -116,7 +116,8 @@ if params.adversarial:
 
         logger.info('Starting adversarial training epoch %i...' % n_epoch)
         tic = time.time()
-        n_words_proc = 0
+        n_words_proc1 = 0
+        n_words_proc2 = 0
         stats1 = {'DIS_COSTS': []}
         stats2 = {'DIS_COSTS': []}
 

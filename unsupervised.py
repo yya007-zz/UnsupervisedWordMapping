@@ -136,7 +136,7 @@ if params.adversarial:
 
             # log stats
             if n_iter % 500 == 0:
-                logger.info('Normal Direction:')
+                logger.info()
                 stats = stats1
 
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
@@ -151,11 +151,10 @@ if params.adversarial:
                 stats_log.append(stats_log2[0])
                 stats_log.append(stats_log3[0])
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
-                logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
+                logger.info(('Normal Direction:%06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:
                     del stats1[k][:]
 
-                logger.info('Reverse Direction:')
                 stats = stats2
 
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
@@ -170,7 +169,7 @@ if params.adversarial:
                 stats_log.append(stats_log2[0])
                 stats_log.append(stats_log3[0])
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
-                logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
+                logger.info(('Reverse Direction: %06i - ' % n_iter) + ' - '.join(stats_log))
                 for k, _ in stats_str:
                     del stats2[k][:]
 

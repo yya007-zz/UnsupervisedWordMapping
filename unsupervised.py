@@ -136,7 +136,6 @@ if params.adversarial:
 
             # log stats
             if n_iter % 500 == 0:
-                logger.info()
                 stats = stats1
 
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]

@@ -99,11 +99,37 @@ assert os.path.isfile(params.tgt_emb)
 
 # build model / trainer / evaluator
 logger = initialize_exp(params)
+
 src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2= build_model_cycle(params, True, True)
 trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, discriminator2, params)
 
 evaluator1 = Evaluator_Cycle(trainer, params1, True)
 evaluator2 = Evaluator_Cycle(trainer, params2, False)
+
+expname=self.params.exp_path.split('/')[-1]
+figPath='./fig/'+expname
+
+nn_1_list_n=[]
+nn_5_list_n=[]
+nn_10_list_n=[]
+csls_knn_1_list_n=[]
+csls_knn_5_list_n=[]
+csls_knn_10_list_n=[]
+
+nn_1_ep_list_r=[]
+nn_5_ep_list_r=[]
+nn_10_ep_list_r=[]
+csls_knn_1_list_r=[]
+csls_knn_5_list_r=[]
+csls_knn_10_list_r=[]
+
+dis_costs_list_n=[]
+gan_costs_list_n=[]
+cyc_costs_list_n=[]
+
+dis_costs_list_r=[]
+gan_costs_list_r=[]
+cyc_costs_list_r=[]
 
 """
 Learning loop for Adversarial Training
@@ -169,28 +195,55 @@ if params.adversarial:
                 stats_log.append(stats_log3[0])
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('Reverse Direction: %06i - ' % n_iter) + ' - '.join(stats_log))
+                
+                #plot
+                dis_costs_list_n=[]
+                gan_costs_list_n=[]
+                cyc_costs_list_n=[]
+
+                dis_costs_list_r=[]
+                gan_costs_list_r=[]
+                cyc_costs_list_r=[]
+
+                #clear
                 for k, _ in stats_str:
                     del stats2[k][:]
 
                 # reset
                 tic = time.time()
                 n_words_proc = 0
-                
 
         # embeddings / discriminator evaluation
-        to_log = OrderedDict({'n_epoch': n_epoch})
+        to_log1 = OrderedDict({'n_epoch': n_epoch})
         
         logger.info('Normal Direction:')
-        evaluator1.all_eval(to_log)
-        evaluator1 .eval_dis(to_log)
+        evaluator1.all_eval(to_log1)
+        evaluator1 .eval_dis(to_log1)
+        logger.info("__log__:%s" % json.dumps(to_log1))
+
+        to_log2 = OrderedDict({'n_epoch': n_epoch})
         logger.info('Reverse Direction:')
-        evaluator2.all_eval(to_log)
-        evaluator2.eval_dis(to_log)
+        evaluator2.all_eval(to_log2)
+        evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
-        logger.info("__log__:%s" % json.dumps(to_log))
+        logger.info("__log__:%s" % json.dumps(to_log2))
         trainer.save_best(to_log, VALIDATION_METRIC)
         logger.info('End of epoch %i.\n\n' % n_epoch)
+
+        nn_1_list_n.append(to_log1["precision_at_1-nn"])
+        nn_5_list_n.append(to_log1["precision_at_5-nn"])
+        nn_10_list_n.append(to_log1["precision_at_10-nn"])
+        csls_knn_1_list_n.append(to_log1["precision_at_1-csls_knn_10"])
+        csls_knn_5_list_n.append(to_log1["precision_at_5-csls_knn_10"])
+        csls_knn_10_list_n.append(to_log1["precision_at_10-csls_knn_10"])
+
+        nn_1_list_r.append(to_log2["precision_at_1-nn"])
+        nn_5_list_r.append(to_log2["precision_at_5-nn"])
+        nn_10_list_r.append(to_log2["precision_at_10-nn"])
+        csls_knn_1_list_r.append(to_log2["precision_at_1-csls_knn_10"])
+        csls_knn_5_list_r.append(to_log2["precision_at_5-csls_knn_10"])
+        csls_knn_10_list_r.append(to_log2["precision_at_10-csls_knn_10"])
 
         # update the learning rate (stop if too small)
         trainer.update_lr(to_log, VALIDATION_METRIC)

@@ -219,7 +219,6 @@ if params.adversarial:
         logger.info('Normal Direction:')
         evaluator1.all_eval(to_log1)
         evaluator1 .eval_dis(to_log1)
-        logger.info("__log__:%s" % json.dumps(to_log1))
 
         to_log2 = OrderedDict({'n_epoch': n_epoch})
         logger.info('Reverse Direction:')
@@ -227,6 +226,7 @@ if params.adversarial:
         evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
+        logger.info("__log__:%s" % json.dumps(to_log1))
         logger.info("__log__:%s" % json.dumps(to_log2))
         trainer.save_best(to_log1, VALIDATION_METRIC)
         logger.info('End of epoch %i.\n\n' % n_epoch)

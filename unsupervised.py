@@ -106,7 +106,7 @@ trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, di
 evaluator1 = Evaluator_Cycle(trainer, params1, True)
 evaluator2 = Evaluator_Cycle(trainer, params2, False)
 
-expname=self.params.exp_path.split('/')[-1]
+expname=params.exp_path.split('/')[-1]
 figPath='./fig/'+expname
 
 nn_1_list_n=[]

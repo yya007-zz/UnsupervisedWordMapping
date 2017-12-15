@@ -26,6 +26,7 @@ python setup.py install
 Install python libraries visdom and dominate.
 pip install visdom
 pip install dominate
+```
 
 ### (Optional)Multi-threaded GIZA++
 

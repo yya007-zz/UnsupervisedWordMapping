@@ -228,7 +228,7 @@ if params.adversarial:
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log2))
-        trainer.save_best(to_log, VALIDATION_METRIC)
+        trainer.save_best(to_log1, VALIDATION_METRIC)
         logger.info('End of epoch %i.\n\n' % n_epoch)
 
         nn_1_list_n.append(to_log1["precision_at_1-nn"])
@@ -246,7 +246,7 @@ if params.adversarial:
         csls_knn_10_list_r.append(to_log2["precision_at_10-csls_knn_10"])
 
         # update the learning rate (stop if too small)
-        trainer.update_lr(to_log, VALIDATION_METRIC)
+        trainer.update_lr(to_log1, VALIDATION_METRIC)
         if trainer.map_optimizer(True).param_groups[0]['lr'] < params.min_lr:
             logger.info('Learning rate < 1e-6. BREAK.')
             break
@@ -291,7 +291,7 @@ if params.refinement:
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log1))
         logger.info("__log__:%s" % json.dumps(to_log2))
-        trainer.save_best(to_log, VALIDATION_METRIC)
+        trainer.save_best(to_log1, VALIDATION_METRIC)
         logger.info('End of refinement iteration %i.\n\n' % n_iter)
 
 

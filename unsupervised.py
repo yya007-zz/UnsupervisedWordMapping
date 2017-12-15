@@ -217,33 +217,27 @@ if params.refinement:
 
         # build a dictionary from aligned embeddings
         trainer.build_dictionary(True)
-
         # apply the Procrustes solution
         trainer.procrustes(True)
-
         # embeddings evaluation
-        to_log = OrderedDict({'n_iter': n_iter})
-        
         logger.info('Normal Direction:')
-        evaluator1.all_eval(to_log)
-        evaluator1.eval_dis(to_log)
-
-
-         # build a dictionary from aligned embeddings
+        to_log1 = OrderedDict({'n_iter_no': n_iter})
+        evaluator1.all_eval(to_log1)
+        evaluator1.eval_dis(to_log1)
+        
+        # build a dictionary from aligned embeddings
         trainer.build_dictionary(False)
-
         # apply the Procrustes solution
         trainer.procrustes(False)
-
-        # embeddings evaluation
-        to_log = OrderedDict({'n_iter': n_iter})
-
         logger.info('Reverse Direction:')
-        evaluator2.all_eval(to_log)
-        evaluator2.eval_dis(to_log)
+        # embeddings evaluation
+        to_log2 = OrderedDict({'n_iter_re': n_iter})
+        evaluator2.all_eval(to_log2)
+        evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
-        logger.info("__log__:%s" % json.dumps(to_log))
+        logger.info("__log__:%s" % json.dumps(to_log1))
+        logger.info("__log__:%s" % json.dumps(to_log2))
         trainer.save_best(to_log, VALIDATION_METRIC)
         logger.info('End of refinement iteration %i.\n\n' % n_iter)
 
@@ -252,3 +246,18 @@ if params.refinement:
 if params.export:
     trainer.reload_best()
     trainer.export()
+
+    to_log1 = OrderedDict({'final_no': 0})
+    logger.info('Normal Direction:')
+    evaluator1.all_eval(to_log1)
+    evaluator1 .eval_dis(to_log1)
+
+    to_log2 = OrderedDict({'final_re': 0})
+    logger.info('Reverse Direction:')
+    evaluator2.all_eval(to_log2)
+    evaluator2.eval_dis(to_log2)
+
+    logger.info("__log__:%s" % json.dumps(to_log1))
+    logger.info("__log__:%s" % json.dumps(to_log2))
+
+

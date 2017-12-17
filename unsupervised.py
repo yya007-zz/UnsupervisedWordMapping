@@ -244,6 +244,7 @@ if params.adversarial:
         
         logger.info('Normal Direction:')
         evaluator1.word_translation(to_log1)
+        evaluator1.dist_mean_cosine(to_log1)
         if not params.quick_test:
             evaluator1.all_eval(to_log1)
             evaluator1.eval_dis(to_log1)
@@ -251,6 +252,7 @@ if params.adversarial:
         to_log2 = OrderedDict({'n_epoch': n_epoch})
         logger.info('Reverse Direction:')
         evaluator2.word_translation(to_log2)
+        evaluator2.dist_mean_cosine(to_log2)
         if not params.quick_test:
             evaluator2.all_eval(to_log2)
             evaluator2.eval_dis(to_log2)
@@ -279,6 +281,7 @@ if params.adversarial:
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.word_translation(to_log1)
+    evaluator1.dist_mean_cosine(to_log1)
     if not params.quick_test:
         evaluator1.all_eval(to_log1)
         evaluator1.eval_dis(to_log1)
@@ -286,6 +289,7 @@ if params.adversarial:
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.word_translation(to_log2)
+    evaluator2.dist_mean_cosine(to_log2)
     if not params.quick_test:
         evaluator2.all_eval(to_log2)
         evaluator2.eval_dis(to_log2)
@@ -329,6 +333,7 @@ if params.refinement:
         logger.info('Normal Direction:')
         to_log1 = OrderedDict({'n_iter_no': n_iter})
         evaluator1.word_translation(to_log1)
+        evaluator1.dist_mean_cosine(to_log1)
         if not params.quick_test:
             evaluator1.all_eval(to_log1)
             evaluator1.eval_dis(to_log1)
@@ -341,6 +346,7 @@ if params.refinement:
         # embeddings evaluation
         to_log2 = OrderedDict({'n_iter_re': n_iter})
         evaluator2.word_translation(to_log2)
+        evaluator2.dist_mean_cosine(to_log2)
         if not params.quick_test:
             evaluator2.all_eval(to_log2)
             evaluator2.eval_dis(to_log2)
@@ -362,6 +368,7 @@ if params.refinement:
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.word_translation(to_log1)
+    evaluator1.dist_mean_cosine(to_log1)
     if not params.quick_test:
         evaluator1.all_eval(to_log1)
         evaluator1.eval_dis(to_log1)
@@ -369,6 +376,7 @@ if params.refinement:
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.word_translation(to_log2)
+    evaluator2.dist_mean_cosine(to_log2)
     if not params.quick_test:
         evaluator2.all_eval(to_log2)
         evaluator2.eval_dis(to_log2)

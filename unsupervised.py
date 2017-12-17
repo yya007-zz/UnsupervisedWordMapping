@@ -190,11 +190,13 @@ def update_plot_info(to_log, postfix):
 
 if params.quick_test:
     logger.info('\n\n----> THIS IS DEBUGGING MODE <----\n\n')
+else:
+    logger.info('\n\n----> THIS IS NOT DEBUGGING MODE <----\n\n')
 """
 Learning loop for Adversarial Training
 """
 if params.adversarial:
-    logger.info('----> ADVERSARIAL TRAINING <----\n\n')
+    logger.info('\n\n----> ADVERSARIAL TRAINING <----\n\n')
 
     # training loop
     for n_epoch in range(params.n_epochs):

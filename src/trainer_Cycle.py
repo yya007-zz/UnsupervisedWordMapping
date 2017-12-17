@@ -197,8 +197,6 @@ class Trainer_Cycle(object):
             logger.error("NaN detected (fool discriminator)")
             exit()
 
-
-
         # optim
         self.map_optimizer(direction).zero_grad()
         loss.backward()

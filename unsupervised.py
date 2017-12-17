@@ -36,9 +36,12 @@ parser.add_argument("--src_lang", type=str, default='en', help="Source language"
 parser.add_argument("--tgt_lang", type=str, default='es', help="Target language")
 parser.add_argument("--emb_dim", type=int, default=300, help="Embedding dimension")
 parser.add_argument("--max_vocab", type=int, default=200000, help="Maximum vocabulary size")
-# mapping
+# mapping if beta is zero, there is no orthogonalization
 parser.add_argument("--map_id_init", type=bool_flag, default=True, help="Initialize the mapping as an identity matrix")
 parser.add_argument("--map_beta", type=float, default=0.001, help="Beta for orthogonalization")
+#Cycle consistency
+parser.add_argument("--lambda_a", type=int, default=10, help="Lambda a")
+parser.add_argument("--lambda_b", type=int, default=10, help="Lambda b")
 # discriminator
 parser.add_argument("--dis_layers", type=int, default=2, help="Discriminator layers")
 parser.add_argument("--dis_hid_dim", type=int, default=2048, help="Discriminator hidden layer dimensions")
@@ -74,8 +77,6 @@ parser.add_argument("--src_emb", type=str, default="", help="Reload source embed
 parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embeddings")
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
 
-parser.add_argument("--lambda_a", type=int, default=10, help="Lambda a")
-parser.add_argument("--lambda_b", type=int, default=10, help="Lambda ")
 
 # parse parameters
 params = parser.parse_args()
@@ -213,9 +214,7 @@ if params.adversarial:
             n_words_proc += 2*params.batch_size
 
             # log stats
-            if n_iter % params.epoch_size/100 == 0:
-                stats = stats1
-
+            if n_iter % (params.epoch_size/100) == 0:
                 stats_log=[""]
                 for cost in stats:
                     plot_info['iter_train'].append(n_epoch)

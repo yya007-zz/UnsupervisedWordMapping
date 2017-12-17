@@ -109,28 +109,81 @@ evaluator2 = Evaluator_Cycle(trainer, params2, False)
 expname=params.exp_path.split('/')[-1]
 figPath='./fig/'+expname
 
-nn_1_list_n=[]
-nn_5_list_n=[]
-nn_10_list_n=[]
-csls_knn_1_list_n=[]
-csls_knn_5_list_n=[]
-csls_knn_10_list_n=[]
+plot_info=OrderedDict({
+    'expname': expname,
 
-nn_1_list_r=[]
-nn_5_list_r=[]
-nn_10_list_r=[]
-csls_knn_1_list_r=[]
-csls_knn_5_list_r=[]
-csls_knn_10_list_r=[]
+    "iter_train":[],
+    'DIS_A_COSTS':[],
+    'DIS_B_COSTS':[],
+    'GAN_A_COSTS': [],
+    'GAN_B_COSTS':[],
+    'CYC_A_COSTS':[],
+    'CYC_B_COSTS':[],
 
-dis_costs_list_n=[]
-gan_costs_list_n=[]
-cyc_costs_list_n=[]
+    "epoch_train":[],
+    "precision_at_1-nn_t_train":[],
+    "precision_at_5-nn_t_train":[],
+    "precision_at_10-nn_t_train":[],
+    "precision_at_1-csls_knn_10_t_train":[],
+    "precision_at_5-csls_knn_10_t_train":[],
+    "precision_at_10-csls_knn_10_t_train":[],
 
-dis_costs_list_r=[]
-gan_costs_list_r=[]
-cyc_costs_list_r=[]
+    "precision_at_1-nn_f_train":[],
+    "precision_at_5-nn_f_train":[],
+    "precision_at_10-nn_f_train":[],
+    "precision_at_1-csls_knn_10_f_train":[],
+    "precision_at_5-csls_knn_10_f_train":[],
+    "precision_at_10-csls_knn_10_f_train":[],
 
+    "precision_at_1-nn_t_train_best":[],
+    "precision_at_5-nn_t_train_best":[],
+    "precision_at_10-nn_t_train_best":[],
+    "precision_at_1-csls_knn_10_t_train_best":[],
+    "precision_at_5-csls_knn_10_t_train_best":[],
+    "precision_at_10-csls_knn_10_t_train_best":[],
+
+    "precision_at_1-nn_f_train_best":[],
+    "precision_at_5-nn_f_train_best":[],
+    "precision_at_10-nn_f_train_best":[],
+    "precision_at_1-csls_knn_10_f_train_best":[],
+    "precision_at_5-csls_knn_10_f_train_best":[],
+    "precision_at_10-csls_knn_10_f_train_best":[],
+
+    "iter_refine":[],
+    "precision_at_1-nn_t_refine":[],
+    "precision_at_5-nn_t_refine":[],
+    "precision_at_10-nn_t_refine":[],
+    "precision_at_1-csls_knn_10_t_refine":[],
+    "precision_at_5-csls_knn_10_t_refine":[],
+    "precision_at_10-csls_knn_10_t_refine":[],
+
+    "precision_at_1-nn_f_refine":[],
+    "precision_at_5-nn_f_refine":[],
+    "precision_at_10-nn_refine":[],
+    "precision_at_1-csls_knn_10_f_refine":[],
+    "precision_at_5-csls_knn_10_f_refine":[],
+    "precision_at_10-csls_knn_10_f_refine":[],
+
+    "precision_at_1-nn_t_refine_best":[],
+    "precision_at_5-nn_t_refine_best":[],
+    "precision_at_10-nn_t_refine_best":[],
+    "precision_at_1-csls_knn_10_t_refine_best":[],
+    "precision_at_5-csls_knn_10_t_refine_best":[],
+    "precision_at_10-csls_knn_10_t_refine_best":[],
+
+    "precision_at_1-nn_f_refine_best":[],
+    "precision_at_5-nn_f_refine_best":[],
+    "precision_at_10-nn_refine_best":[],
+    "precision_at_1-csls_knn_10_f_refine_best":[],
+    "precision_at_5-csls_knn_10_f_refine_best":[],
+    "precision_at_10-csls_knn_10_f_refine_best":[],
+
+    })
+
+def update_plot_info(to_log, postfix):
+    for key in to_log:
+        if key+postfix in plot_info:
+            plot_info[key+postfix].append(to_log[key])
 """
 Learning loop for Adversarial Training
 """
@@ -143,71 +196,40 @@ if params.adversarial:
         logger.info('Starting adversarial training epoch %i...' % n_epoch)
         tic = time.time()
         n_words_proc = 0
-        stats1 = {'DIS_COSTS': [],'GAN_COSTS':[],'CYC_COSTS':[]}
-        stats2 = {'DIS_COSTS': [],'GAN_COSTS':[],'CYC_COSTS':[]}
+        stats = {'DIS_A_COSTS':[],'DIS_B_COSTS':[],'GAN_A_COSTS': [],'GAN_B_COSTS':[],'CYC_A_COSTS':[],'CYC_B_COSTS':[]}
 
         for n_iter in range(0, params.epoch_size, params.batch_size):
 
             # discriminator training
             for _ in range(params.dis_steps):
-                trainer.dis_step(stats2,False)
-                trainer.dis_step(stats1,True)
+                trainer.dis_step(stats,False)
+                trainer.dis_step(stats,True)
                 
 
             # mapping training (discriminator fooling)
-            trainer.mapping_step(stats2,False)
-            trainer.mapping_step(stats1,True)
+            trainer.mapping_step(stats,False)
+            trainer.mapping_step(stats,True)
             
             n_words_proc += 2*params.batch_size
 
             # log stats
-            if n_iter % 500 == 0:
+            if n_iter % params.epoch_size/100 == 0:
                 stats = stats1
 
-                stats_str = [('DIS_COSTS', 'Discriminator loss')]
-                stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
-                             for k, v in stats_str if len(stats[k]) > 0]
-                stats_str = [('GAN_COSTS', 'Map loss')]
-                stats_log2 = ['%s: %.4f' % (v, np.mean(stats[k]))
-                             for k, v in stats_str if len(stats[k]) > 0]
-                stats_str = [('CYC_COSTS', 'Cycle loss')]
-                stats_log3 = ['%s: %.4f' % (v, np.mean(stats[k]))
-                             for k, v in stats_str if len(stats[k]) > 0]
-                stats_log.append(stats_log2[0])
-                stats_log.append(stats_log3[0])
-                stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
-                logger.info(('Normal Direction:%06i - ' % n_iter) + ' - '.join(stats_log))
-                for k, _ in stats_str:
-                    del stats1[k][:]
+                stats_log=[""]
+                for cost in stats:
+                    plot_info['iter_train'].append(n_epoch)
+                    if len(stats[cost]) > 0:
+                        stats_log.append(['%s: %.4f' % (cost, np.mean(stats[cost]))])
+                        plot_info[cost].append(np.mean(stats[cost]))
 
-                stats = stats2
-
-                stats_str = [('DIS_COSTS', 'Discriminator loss')]
-                stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
-                             for k, v in stats_str if len(stats[k]) > 0]
-                stats_str = [('GAN_COSTS', 'Map loss')]
-                stats_log2 = ['%s: %.4f' % (v, np.mean(stats[k]))
-                             for k, v in stats_str if len(stats[k]) > 0]
-                stats_str = [('CYC_COSTS', 'Cycle loss')]
-                stats_log3 = ['%s: %.4f' % (v, np.mean(stats[k]))
-                             for k, v in stats_str if len(stats[k]) > 0]
-                stats_log.append(stats_log2[0])
-                stats_log.append(stats_log3[0])
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
-                logger.info(('Reverse Direction: %06i - ' % n_iter) + ' - '.join(stats_log))
+                logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 
-                #plot
-                dis_costs_list_n=[]
-                gan_costs_list_n=[]
-                cyc_costs_list_n=[]
-
-                dis_costs_list_r=[]
-                gan_costs_list_r=[]
-                cyc_costs_list_r=[]
 
                 #clear
                 for k, _ in stats_str:
-                    del stats2[k][:]
+                    del stats[k][:]
 
                 # reset
                 tic = time.time()
@@ -230,20 +252,10 @@ if params.adversarial:
         logger.info("__log__:%s" % json.dumps(to_log2))
         trainer.save_best(to_log1, VALIDATION_METRIC)
         logger.info('End of epoch %i.\n\n' % n_epoch)
-
-        nn_1_list_n.append(to_log1["precision_at_1-nn"])
-        nn_5_list_n.append(to_log1["precision_at_5-nn"])
-        nn_10_list_n.append(to_log1["precision_at_10-nn"])
-        csls_knn_1_list_n.append(to_log1["precision_at_1-csls_knn_10"])
-        csls_knn_5_list_n.append(to_log1["precision_at_5-csls_knn_10"])
-        csls_knn_10_list_n.append(to_log1["precision_at_10-csls_knn_10"])
-
-        nn_1_list_r.append(to_log2["precision_at_1-nn"])
-        nn_5_list_r.append(to_log2["precision_at_5-nn"])
-        nn_10_list_r.append(to_log2["precision_at_10-nn"])
-        csls_knn_1_list_r.append(to_log2["precision_at_1-csls_knn_10"])
-        csls_knn_5_list_r.append(to_log2["precision_at_5-csls_knn_10"])
-        csls_knn_10_list_r.append(to_log2["precision_at_10-csls_knn_10"])
+        
+        plot_info['epoch_train'].append(n_epoch)
+        update_plot_info(to_log1, "_t_train")
+        update_plot_info(to_log2, "_f_train")
 
         # update the learning rate (stop if too small)
         trainer.update_lr(to_log1, VALIDATION_METRIC)
@@ -253,6 +265,23 @@ if params.adversarial:
         if trainer.map_optimizer(False).param_groups[0]['lr'] < params.min_lr:
             logger.info('Learning rate < 1e-6. BREAK.')
             break
+
+    trainer.reload_best()
+    to_log1 = OrderedDict({'final_t': 0})
+    logger.info('Normal Direction:')
+    evaluator1.all_eval(to_log1)
+    evaluator1 .eval_dis(to_log1)
+
+    to_log2 = OrderedDict({'final_f': 0})
+    logger.info('Reverse Direction:')
+    evaluator2.all_eval(to_log2)
+    evaluator2.eval_dis(to_log2)
+
+    logger.info("__log__:%s" % json.dumps(to_log1))
+    logger.info("__log__:%s" % json.dumps(to_log2))
+
+    update_plot_info(to_log1, "_t_train_best")
+    update_plot_info(to_log2, "_f_train_best")
 
 
 """
@@ -294,18 +323,18 @@ if params.refinement:
         trainer.save_best(to_log1, VALIDATION_METRIC)
         logger.info('End of refinement iteration %i.\n\n' % n_iter)
 
+        plot_info['iter_refine'].append(n_iter)
+        update_plot_info(to_log1, "_t_refine")
+        update_plot_info(to_log2, "_f_refine")
 
-# export embeddings to a text format
-if params.export:
+    #show best
     trainer.reload_best()
-    trainer.export()
-
-    to_log1 = OrderedDict({'final_no': 0})
+    to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.all_eval(to_log1)
     evaluator1 .eval_dis(to_log1)
 
-    to_log2 = OrderedDict({'final_re': 0})
+    to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.all_eval(to_log2)
     evaluator2.eval_dis(to_log2)
@@ -313,4 +342,22 @@ if params.export:
     logger.info("__log__:%s" % json.dumps(to_log1))
     logger.info("__log__:%s" % json.dumps(to_log2))
 
+    update_plot_info(to_log1, "_t_refine_best")
+    update_plot_info(to_log2, "_f_refine_best")
+
+
+# export embeddings to a text format
+if params.export:
+    trainer.reload_best()
+    trainer.export()
+
+    address=os.path.join(self.params.exp_path, 'plot_info.test')
+    with open(address, 'w') as outfile:  
+        json.dump(plot_info, outfile)
+
+    #test
+    with open(address) as json_file:  
+        data = json.load(json_file)
+        print data
+    
 

@@ -139,9 +139,11 @@ class Trainer_Cycle(object):
         x, y = self.get_dis_xy(volatile=True, direction=direction)
         preds = self.discriminator(direction)(Variable(x.data))
         loss = F.binary_cross_entropy(preds, y)
-        # print loss.data[0]
 
-        stats['DIS_COSTS'].append(loss.data[0])
+        if direction:
+            stats['DIS_A_COSTS'].append(loss.data[0])
+        else:
+            stats['DIS_B_COSTS'].append(loss.data[0])
 
         # check NaN
         if (loss != loss).data.any():
@@ -176,18 +178,26 @@ class Trainer_Cycle(object):
         preds = self.discriminator(direction)(x)
         
         map_loss = F.binary_cross_entropy(preds, 1 - y)
-        loss = self.params.dis_lambda * map_loss
-        stats['GAN_COSTS'].append(loss.data[0])
-        cycloss=self.total_consistency_loss(volatile=False)
-        stats['CYC_COSTS'].append(cycloss.data[0])
+        cycle_A_loss=self.consistency_loss(volatile=False, True)
+        cycle_B_loss=self.consistency_loss(volatile=False, False)
+
+        if direction:
+            stats['GAN_A_COSTS'].append(map_loss.data[0])
+        else:
+            stats['GAN_B_COSTS'].append(map_loss.data[0])
+
+        stats['CYC_A_COSTS'].append(cycle_A_loss.data[0])
+        stats['CYC_B_COSTS'].append(cycle_B_loss.data[0])
         # print(map_loss)
-        loss = loss +cycloss
+        loss = self.params.dis_lambda * map_loss + self.cycle_lambda(True) * cycle_A_loss + self.cycle_lambda(False) * cycle_B_loss
         
         # print(loss)
         # check NaN
         if (loss != loss).data.any():
             logger.error("NaN detected (fool discriminator)")
             exit()
+
+
 
         # optim
         self.map_optimizer(direction).zero_grad()
@@ -204,31 +214,30 @@ class Trainer_Cycle(object):
         # print(self.mapping(False).weight.data)
 
 
-    def total_consistency_loss(self, volatile):
+    def consistency_loss(self, volatile, direction):
         bs = 2*self.params.batch_size
         mf = self.params.dis_most_frequent
         assert mf <= min(len(self.src_dico), len(self.tgt_dico))
-        src_ids = torch.LongTensor(bs).random_(len(self.src_dico) if mf == 0 else mf)
-        tgt_ids = torch.LongTensor(bs).random_(len(self.tgt_dico) if mf == 0 else mf)
+
+        if direction:
+            dico=self.src_dico
+            emb=self.src_emb
+        else:
+            dico=self.tgt_dico
+            emb=self.tgt_emb
+        
+        ids = torch.LongTensor(bs).random_(len(dico) if mf == 0 else mf)
+        
         if self.params.cuda:
-            src_ids = src_ids.cuda()
-            tgt_ids = tgt_ids.cuda()
-        # get word embeddings
-        src_emb = self.src_emb(Variable(src_ids, volatile=True))
-        tgt_emb = self.tgt_emb(Variable(tgt_ids, volatile=True))
+            ids = ids.cuda()
 
+        emb = self.emb(Variable(ids, volatile=True))
+        emb = Variable(emb.data, volatile=volatile)
+        emb_cycle = self.mapping(direction)(emb)
+        emb_cycle = self.mapping(not direction)(emb_cycle)
+        loss = F.l1_loss(emb,emb_cycle)
 
-        src_emb = Variable(src_emb.data, volatile=volatile)
-        src_emb_cycle = self.mapping(True)(src_emb)
-        src_emb_cycle = self.mapping(False)(src_emb_cycle)
-        loss_A = F.l1_loss(src_emb,src_emb_cycle)
-
-        tgt_emb = Variable(tgt_emb.data, volatile=volatile)
-        tgt_emb_cycle = self.mapping(False)(tgt_emb)
-        tgt_emb_cycle = self.mapping(True)(tgt_emb_cycle)
-        loss_B = F.l1_loss(tgt_emb,tgt_emb_cycle)
-
-        return self.cycle_lambda(True)*loss_A+self.cycle_lambda(False)*loss_B
+        return loss
 
     def load_training_dico(self, dico_train):
         """

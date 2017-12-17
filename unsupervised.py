@@ -237,12 +237,12 @@ if params.adversarial:
         
         logger.info('Normal Direction:')
         evaluator1.all_eval(to_log1)
-        evaluator1 .eval_dis(to_log1)
+        # evaluator1 .eval_dis(to_log1)
 
         to_log2 = OrderedDict({'n_epoch': n_epoch})
         logger.info('Reverse Direction:')
         evaluator2.all_eval(to_log2)
-        evaluator2.eval_dis(to_log2)
+        # evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log1))
@@ -268,18 +268,27 @@ if params.adversarial:
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.all_eval(to_log1)
-    evaluator1 .eval_dis(to_log1)
+    # evaluator1 .eval_dis(to_log1)
 
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.all_eval(to_log2)
-    evaluator2.eval_dis(to_log2)
+    # evaluator2.eval_dis(to_log2)
 
     logger.info("__log__:%s" % json.dumps(to_log1))
     logger.info("__log__:%s" % json.dumps(to_log2))
 
     update_plot_info(to_log1, "_t_train_best")
     update_plot_info(to_log2, "_f_train_best")
+
+    address=os.path.join(self.params.exp_path, 'plot_info.test')
+    with open(address, 'w') as outfile:  
+        json.dump(plot_info, outfile)
+
+    #test
+    with open(address) as json_file:  
+        data = json.load(json_file)
+        print data
 
 
 """
@@ -303,7 +312,7 @@ if params.refinement:
         logger.info('Normal Direction:')
         to_log1 = OrderedDict({'n_iter_no': n_iter})
         evaluator1.all_eval(to_log1)
-        evaluator1.eval_dis(to_log1)
+        # evaluator1.eval_dis(to_log1)
         
         # build a dictionary from aligned embeddings
         trainer.build_dictionary(False)
@@ -313,7 +322,7 @@ if params.refinement:
         # embeddings evaluation
         to_log2 = OrderedDict({'n_iter_re': n_iter})
         evaluator2.all_eval(to_log2)
-        evaluator2.eval_dis(to_log2)
+        # evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log1))
@@ -332,12 +341,12 @@ if params.refinement:
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.all_eval(to_log1)
-    evaluator1 .eval_dis(to_log1)
+    # evaluator1 .eval_dis(to_log1)
 
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.all_eval(to_log2)
-    evaluator2.eval_dis(to_log2)
+    # evaluator2.eval_dis(to_log2)
 
     logger.info("__log__:%s" % json.dumps(to_log1))
     logger.info("__log__:%s" % json.dumps(to_log2))

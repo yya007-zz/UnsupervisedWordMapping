@@ -206,7 +206,6 @@ if params.adversarial:
                 trainer.dis_step(stats,False)
                 trainer.dis_step(stats,True)
                 
-
             # mapping training (discriminator fooling)
             trainer.mapping_step(stats,False)
             trainer.mapping_step(stats,True)
@@ -225,9 +224,8 @@ if params.adversarial:
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))
                 logger.info(('%06i - ' % n_iter) + ' - '.join(stats_log))
                 
-
                 #clear
-                for k, _ in stats_str:
+                for cost in stats:
                     del stats[k][:]
 
                 # reset

@@ -162,7 +162,7 @@ plot_info=OrderedDict({
 
     "precision_at_1-nn_f_refine":[],
     "precision_at_5-nn_f_refine":[],
-    "precision_at_10-nn_refine":[],
+    "precision_at_10-nn_f_refine":[],
     "precision_at_1-csls_knn_10_f_refine":[],
     "precision_at_5-csls_knn_10_f_refine":[],
     "precision_at_10-csls_knn_10_f_refine":[],
@@ -176,7 +176,7 @@ plot_info=OrderedDict({
 
     "precision_at_1-nn_f_refine_best":[],
     "precision_at_5-nn_f_refine_best":[],
-    "precision_at_10-nn_refine_best":[],
+    "precision_at_10-nn_f_refine_best":[],
     "precision_at_1-csls_knn_10_f_refine_best":[],
     "precision_at_5-csls_knn_10_f_refine_best":[],
     "precision_at_10-csls_knn_10_f_refine_best":[],

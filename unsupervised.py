@@ -76,6 +76,8 @@ parser.add_argument("--dico_max_size", type=int, default=0, help="Maximum genera
 parser.add_argument("--src_emb", type=str, default="", help="Reload source embeddings")
 parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embeddings")
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
+# quick test
+parser.add_argument("--quick_test", type=bool_flag, default=False, help="quick test")
 
 
 # parse parameters
@@ -185,6 +187,9 @@ def update_plot_info(to_log, postfix):
     for key in to_log:
         if key+postfix in plot_info:
             plot_info[key+postfix].append(to_log[key])
+
+if params.quick_test:
+    logger.info('\n\n----> THIS IS DEBUGGING MODE <----\n\n')
 """
 Learning loop for Adversarial Training
 """
@@ -237,12 +242,14 @@ if params.adversarial:
         
         logger.info('Normal Direction:')
         evaluator1.all_eval(to_log1)
-        # evaluator1 .eval_dis(to_log1)
+        if not params.quick_test:
+            evaluator1 .eval_dis(to_log1)
 
         to_log2 = OrderedDict({'n_epoch': n_epoch})
         logger.info('Reverse Direction:')
         evaluator2.all_eval(to_log2)
-        # evaluator2.eval_dis(to_log2)
+        if not params.quick_test:
+            evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log1))
@@ -268,12 +275,14 @@ if params.adversarial:
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.all_eval(to_log1)
-    # evaluator1 .eval_dis(to_log1)
+    if not params.quick_test:
+        evaluator1 .eval_dis(to_log1)
 
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.all_eval(to_log2)
-    # evaluator2.eval_dis(to_log2)
+    if not params.quick_test:
+        evaluator2.eval_dis(to_log2)
 
     logger.info("__log__:%s" % json.dumps(to_log1))
     logger.info("__log__:%s" % json.dumps(to_log2))
@@ -312,7 +321,8 @@ if params.refinement:
         logger.info('Normal Direction:')
         to_log1 = OrderedDict({'n_iter_no': n_iter})
         evaluator1.all_eval(to_log1)
-        # evaluator1.eval_dis(to_log1)
+        if not params.quick_test:
+            evaluator1.eval_dis(to_log1)
         
         # build a dictionary from aligned embeddings
         trainer.build_dictionary(False)
@@ -322,7 +332,8 @@ if params.refinement:
         # embeddings evaluation
         to_log2 = OrderedDict({'n_iter_re': n_iter})
         evaluator2.all_eval(to_log2)
-        # evaluator2.eval_dis(to_log2)
+        if not params.quick_test:
+            evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
         logger.info("__log__:%s" % json.dumps(to_log1))
@@ -341,12 +352,14 @@ if params.refinement:
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
     evaluator1.all_eval(to_log1)
-    # evaluator1 .eval_dis(to_log1)
+    if not params.quick_test:
+        evaluator1 .eval_dis(to_log1)
 
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
     evaluator2.all_eval(to_log2)
-    # evaluator2.eval_dis(to_log2)
+    if not params.quick_test:
+        evaluator2.eval_dis(to_log2)
 
     logger.info("__log__:%s" % json.dumps(to_log1))
     logger.info("__log__:%s" % json.dumps(to_log2))

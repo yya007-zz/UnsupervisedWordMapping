@@ -215,11 +215,11 @@ if params.adversarial:
 
             # log stats
             if n_iter % (params.epoch_size/100) == 0:
-                stats_log=[""]
+                stats_log=""
                 for cost in stats:
                     plot_info['iter_train'].append(n_epoch)
                     if len(stats[cost]) > 0:
-                        stats_log.append(['%s: %.4f' % (cost, np.mean(stats[cost]))])
+                        stats_log.extend(['%s: %.4f' % (cost, np.mean(stats[cost]))])
                         plot_info[cost].append(np.mean(stats[cost]))
 
                 stats_log.append('%i samples/s' % int(n_words_proc / (time.time() - tic)))

@@ -226,7 +226,7 @@ if params.adversarial:
                 
                 #clear
                 for cost in stats:
-                    del stats[k][:]
+                    del stats[cost][:]
 
                 # reset
                 tic = time.time()

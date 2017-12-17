@@ -300,9 +300,8 @@ if params.adversarial:
     update_plot_info(to_log1, "_t_train_best")
     update_plot_info(to_log2, "_f_train_best")
 
-    address=os.path.join(params.exp_path, 'plot_info.test')
-
     if params.quick_test:
+        address=os.path.join(params.exp_path, 'plot_info.test')
         with open(address, 'w') as outfile:  
             json.dump(plot_info, outfile)
 

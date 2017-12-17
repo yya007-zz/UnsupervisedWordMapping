@@ -40,8 +40,8 @@ parser.add_argument("--max_vocab", type=int, default=200000, help="Maximum vocab
 parser.add_argument("--map_id_init", type=bool_flag, default=True, help="Initialize the mapping as an identity matrix")
 parser.add_argument("--map_beta", type=float, default=0.001, help="Beta for orthogonalization")
 #Cycle consistency
-parser.add_argument("--lambda_a", type=int, default=10, help="Lambda a")
-parser.add_argument("--lambda_b", type=int, default=10, help="Lambda b")
+parser.add_argument("--lambda_a", type=int, default=10, help="Cycle consistency loss feedback coefficient from src to src")
+parser.add_argument("--lambda_b", type=int, default=10, help="Cycle consistency loss feedback coefficient from tgt to tgt")
 # discriminator
 parser.add_argument("--dis_layers", type=int, default=2, help="Discriminator layers")
 parser.add_argument("--dis_hid_dim", type=int, default=2048, help="Discriminator hidden layer dimensions")
@@ -263,6 +263,7 @@ if params.adversarial:
             logger.info('Learning rate < 1e-6. BREAK.')
             break
 
+    logger.info('\n\n----> BEST TRAINING MODEL <----\n\n')
     trainer.reload_best()
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
@@ -286,7 +287,7 @@ Learning loop for Procrustes Iterative Refinement
 """
 if params.refinement:
     # Get the best mapping according to VALIDATION_METRIC
-    logger.info('----> ITERATIVE PROCRUSTES REFINEMENT <----\n\n')
+    logger.info('\n\n----> ITERATIVE PROCRUSTES REFINEMENT <----\n\n')
     trainer.reload_best()
 
     # training loop
@@ -324,6 +325,8 @@ if params.refinement:
         update_plot_info(to_log1, "_t_refine")
         update_plot_info(to_log2, "_f_refine")
 
+    logger.info('\n\n----> BEST PROCRUSTES REFINEMENT MODEL <----\n\n')
+
     #show best
     trainer.reload_best()
     to_log1 = OrderedDict({'final_t': 0})
@@ -341,7 +344,6 @@ if params.refinement:
 
     update_plot_info(to_log1, "_t_refine_best")
     update_plot_info(to_log2, "_f_refine_best")
-
 
 # export embeddings to a text format
 if params.export:

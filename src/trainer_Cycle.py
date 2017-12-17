@@ -231,7 +231,7 @@ class Trainer_Cycle(object):
         if self.params.cuda:
             ids = ids.cuda()
 
-        emb = self.emb(Variable(ids, volatile=True))
+        emb = emb(Variable(ids, volatile=True))
         emb = Variable(emb.data, volatile=volatile)
         emb_cycle = self.mapping(direction)(emb)
         emb_cycle = self.mapping(not direction)(emb_cycle)

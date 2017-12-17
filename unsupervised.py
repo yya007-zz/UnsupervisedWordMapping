@@ -215,7 +215,7 @@ if params.adversarial:
 
             # log stats
             if n_iter % (params.epoch_size/100) == 0:
-                stats_log=""
+                stats_log=[""]
                 for cost in stats:
                     plot_info['iter_train'].append(n_epoch)
                     if len(stats[cost]) > 0:

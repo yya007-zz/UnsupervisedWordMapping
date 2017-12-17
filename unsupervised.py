@@ -77,7 +77,7 @@ parser.add_argument("--src_emb", type=str, default="", help="Reload source embed
 parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embeddings")
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
 # quick test
-parser.add_argument("--quick_test", type=bool_flag, default=False, help="quick test")
+parser.add_argument("--quick_test", type=bool_flag, default=False, help="USE quick test")
 
 
 # parse parameters
@@ -243,14 +243,16 @@ if params.adversarial:
         to_log1 = OrderedDict({'n_epoch': n_epoch})
         
         logger.info('Normal Direction:')
-        evaluator1.all_eval(to_log1)
+        evaluator1..word_translation(to_log1)
         if not params.quick_test:
+            evaluator1.all_eval(to_log1)
             evaluator1 .eval_dis(to_log1)
 
         to_log2 = OrderedDict({'n_epoch': n_epoch})
         logger.info('Reverse Direction:')
-        evaluator2.all_eval(to_log2)
+        evaluator2.word_translation(to_log2)
         if not params.quick_test:
+            evaluator2.all_eval(to_log2)
             evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
@@ -276,14 +278,16 @@ if params.adversarial:
     trainer.reload_best()
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
-    evaluator1.all_eval(to_log1)
+    evaluator1..word_translation(to_log1)
     if not params.quick_test:
+        evaluator1.all_eval(to_log1)
         evaluator1 .eval_dis(to_log1)
 
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
-    evaluator2.all_eval(to_log2)
+    evaluator2.word_translation(to_log2)
     if not params.quick_test:
+        evaluator2.all_eval(to_log2)
         evaluator2.eval_dis(to_log2)
 
     logger.info("__log__:%s" % json.dumps(to_log1))
@@ -293,13 +297,15 @@ if params.adversarial:
     update_plot_info(to_log2, "_f_train_best")
 
     address=os.path.join(self.params.exp_path, 'plot_info.test')
-    with open(address, 'w') as outfile:  
-        json.dump(plot_info, outfile)
 
-    #test
-    with open(address) as json_file:  
-        data = json.load(json_file)
-        print data
+    if params.quick_test:
+        with open(address, 'w') as outfile:  
+            json.dump(plot_info, outfile)
+
+        #test
+        with open(address) as json_file:  
+            data = json.load(json_file)
+            print data
 
 
 """
@@ -322,9 +328,10 @@ if params.refinement:
         # embeddings evaluation
         logger.info('Normal Direction:')
         to_log1 = OrderedDict({'n_iter_no': n_iter})
-        evaluator1.all_eval(to_log1)
+        evaluator1..word_translation(to_log1)
         if not params.quick_test:
-            evaluator1.eval_dis(to_log1)
+            evaluator1.all_eval(to_log1)
+            evaluator1 .eval_dis(to_log1)
         
         # build a dictionary from aligned embeddings
         trainer.build_dictionary(False)
@@ -333,8 +340,9 @@ if params.refinement:
         logger.info('Reverse Direction:')
         # embeddings evaluation
         to_log2 = OrderedDict({'n_iter_re': n_iter})
-        evaluator2.all_eval(to_log2)
+        evaluator2.word_translation(to_log2)
         if not params.quick_test:
+            evaluator2.all_eval(to_log2)
             evaluator2.eval_dis(to_log2)
 
         # JSON log / save best model / end of epoch
@@ -353,14 +361,16 @@ if params.refinement:
     trainer.reload_best()
     to_log1 = OrderedDict({'final_t': 0})
     logger.info('Normal Direction:')
-    evaluator1.all_eval(to_log1)
+    evaluator1..word_translation(to_log1)
     if not params.quick_test:
+        evaluator1.all_eval(to_log1)
         evaluator1 .eval_dis(to_log1)
 
     to_log2 = OrderedDict({'final_f': 0})
     logger.info('Reverse Direction:')
-    evaluator2.all_eval(to_log2)
+    evaluator2.word_translation(to_log2)
     if not params.quick_test:
+        evaluator2.all_eval(to_log2)
         evaluator2.eval_dis(to_log2)
 
     logger.info("__log__:%s" % json.dumps(to_log1))
@@ -378,9 +388,10 @@ if params.export:
     with open(address, 'w') as outfile:  
         json.dump(plot_info, outfile)
 
-    #test
-    with open(address) as json_file:  
-        data = json.load(json_file)
-        print data
+    if params.quick_test:
+        #test
+        with open(address) as json_file:  
+            data = json.load(json_file)
+            print data
     
 

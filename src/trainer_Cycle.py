@@ -178,8 +178,8 @@ class Trainer_Cycle(object):
         preds = self.discriminator(direction)(x)
         
         map_loss = F.binary_cross_entropy(preds, 1 - y)
-        cycle_A_loss=self.consistency_loss(volatile=False, True)
-        cycle_B_loss=self.consistency_loss(volatile=False, False)
+        cycle_A_loss=self.consistency_loss(volatile=False, direction=True)
+        cycle_B_loss=self.consistency_loss(volatile=False, direction=False)
 
         if direction:
             stats['GAN_A_COSTS'].append(map_loss.data[0])

@@ -220,7 +220,7 @@ if params.adversarial:
             n_words_proc += 2*params.batch_size
 
             # log stats
-            if n_iter % (params.epoch_size/100) == 0:
+            if n_iter % (params.epoch_size/params.batch_size/20*params.batch_size) == 0:
                 stats_log=[""]
                 for cost in stats:
                     if len(stats[cost]) > 0:

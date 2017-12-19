@@ -1,6 +1,7 @@
 data/*
 log/*
 output/*
+fig/*
 dumped/*
 .DS_Store
 cmd.txt

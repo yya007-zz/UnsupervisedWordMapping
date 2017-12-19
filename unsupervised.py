@@ -109,6 +109,9 @@ trainer = Trainer_Cycle(src_emb, tgt_emb, mapping1, mapping2, discriminator1, di
 evaluator1 = Evaluator_Cycle(trainer, params1, True)
 evaluator2 = Evaluator_Cycle(trainer, params2, False)
 
+expname=params.exp_path.split('/')[-1]
+figPath='./fig/'+expname
+
 plot_info=OrderedDict({
     'expname': expname,
 
@@ -386,7 +389,7 @@ if params.refinement:
 # export embeddings to a text format
 if params.export:
     trainer.reload_best()
-    trainer.export()
+    # trainer.export()
 
     address=os.path.join(params.exp_path, 'plot_info.test')
     with open(address, 'w') as outfile:  

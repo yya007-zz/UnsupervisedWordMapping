@@ -38,6 +38,8 @@ e10=load_plot_info('cy7cfw2e91')
 #lambda 100
 e11=load_plot_info('l1ezjmep0d')
 
+colors=['b','g','r','c','m','y','k','w']
+
 features =["precision_at_1-nn", "precision_at_5-nn","precision_at_10-nn","precision_at_1-csls_knn_10","precision_at_5-csls_knn_10","precision_at_10-csls_knn_10"]
 labels=["Top 1 nn", "Top 5 nn","Top 10 nn","Top 1 csls_knn_10","Top 5 csls_knn_10","Top 10 csls_knn_10"]
 
@@ -91,10 +93,10 @@ def regular_plot(plot_info, name):
 
 fig = plt.figure()
 for i in range(3):
-	plt.plot(e1['epoch_train'],e1[features[i]+"_t_train"],'-',label=labels[i]+' normal direction')
-	plt.plot(e1['epoch_train'],e1[features[i]+"_f_train"],'-',label=labels[i]+' reverse direction')
+	plt.plot(e1['epoch_train'],e1[features[i]+"_t_train"],colors[i]+'--',label=labels[i]+' normal direction')
+	plt.plot(e1['epoch_train'],e1[features[i]+"_f_train"],colors[i]+'-',label=labels[i]+' reverse direction')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
 fig.savefig('./fig/e1_acc.png')  
 plt.close(fig)
@@ -103,7 +105,7 @@ fig = plt.figure()
 for loss in losses:
 	plt.plot(e1['iter_train'],e1[loss],'-',label=loss)
 plt.ylabel('Loss')
-plt.xlabel('# Epoch')
+plt.xlabel('# Iteration')
 plt.legend()
 fig.savefig('./fig/e1_loss.png')   # save the figure to file
 plt.close(fig)
@@ -116,7 +118,7 @@ plt.plot(e9['epoch_train'],e9[features[0]+"_t_train"],'-',label='lambda=10')
 plt.plot(e10['epoch_train'],e10[features[0]+"_t_train"],'-',label='lambda=20')
 plt.plot(e11['epoch_train'],e11[features[0]+"_t_train"],'-',label='lambda=100')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
 fig.savefig('./fig/e2_lam_t.png')  
 plt.close(fig)
@@ -129,7 +131,7 @@ plt.plot(e9['epoch_train'],e9[features[0]+"_f_train"],'-',label='lambda=10')
 plt.plot(e10['epoch_train'],e10[features[0]+"_f_train"],'-',label='lambda=20')
 plt.plot(e11['epoch_train'],e11[features[0]+"_f_train"],'-',label='lambda=100')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
 fig.savefig('./fig/e2_lam_f.png')  
 plt.close(fig)
@@ -143,7 +145,7 @@ plt.plot(e9['epoch_train'],e9[features[0]+"_t_train"],'-',label='epoch size = 10
 plt.plot(e5['epoch_train'],e5[features[0]+"_t_train"],'-',label='epoch size = 2000000')
 plt.plot(e6['epoch_train'],e6[features[0]+"_t_train"],'-',label='epoch size = 4000000')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
 fig.savefig('./fig/e3_ep_t.png')  
 plt.close(fig)
@@ -154,7 +156,7 @@ plt.plot(e9['epoch_train'],e9[features[0]+"_f_train"],'-',label='epoch size = 10
 plt.plot(e5['epoch_train'],e5[features[0]+"_f_train"],'-',label='epoch size = 2000000')
 plt.plot(e6['epoch_train'],e6[features[0]+"_f_train"],'-',label='epoch size = 4000000')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
 fig.savefig('./fig/e3_ep_f.png')  
 plt.close(fig)
@@ -165,7 +167,7 @@ plt.plot(e3['epoch_train'],e3[features[0]+"_t_train"],'-',label='lambda=0 beta=0
 plt.plot(e2['epoch_train'],e2[features[0]+"_t_train"],'-',label='lambda=10 beta=0')
 plt.plot(e9['epoch_train'],e9[features[0]+"_t_train"],'-',label='lambda=10 beta=0.001')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
 fig.savefig('./fig/e4_organ_t.png')  
 plt.close(fig)
@@ -176,7 +178,46 @@ plt.plot(e3['epoch_train'],e3[features[0]+"_f_train"],'-',label='lambda=0 beta=0
 plt.plot(e2['epoch_train'],e2[features[0]+"_f_train"],'-',label='lambda=10 beta=0')
 plt.plot(e9['epoch_train'],e9[features[0]+"_f_train"],'-',label='lambda=10 beta=0.001')
 plt.ylabel('Accuracy')
-plt.xlabel('# Iteration')
+plt.xlabel('# Epoch')
 plt.legend()
-fig.savefig('./fig/e4_organ_t.png')  
+fig.savefig('./fig/e4_organ_f.png')  
+plt.close(fig)
+
+
+fig = plt.figure()
+for i in range(6):
+	plt.plot(e9['epoch_train'],e9[features[i]+"_t_train"],'-',label=labels[i])
+plt.ylabel('Accuracy')
+plt.xlabel('# Epoch')
+plt.legend()
+fig.savefig('./fig/e5_csls_t.png')  
+plt.close(fig)
+
+fig = plt.figure()
+for i in range(6):
+	plt.plot(e9['epoch_train'],e9[features[i]+"_f_train"],'-',label=labels[i])
+plt.ylabel('Accuracy')
+plt.xlabel('# Epoch')
+plt.legend()
+fig.savefig('./fig/e5_csls_f.png')  
+plt.close(fig)
+
+fig = plt.figure()
+for i in range(6):
+	plt.plot(e9['epoch_train'],e9[features[i]+"_t_train"],colors[i]+'--',label='without cycle consistency')
+	plt.plot(e1['epoch_train'][:10],e1[features[i]+"_t_train"][:10],colors[i]+'-',label='with cycle consistency')
+plt.ylabel('Accuracy')
+plt.xlabel('# Epoch')
+plt.legend()
+fig.savefig('./fig/e6_t.png')  
+plt.close(fig)
+
+fig = plt.figure()
+for i in range(6):
+	plt.plot(e9['epoch_train'],e9[features[i]+"_f_train"],colors[i]+'--',label='without cycle consistency')
+	plt.plot(e1['epoch_train'][:10],e1[features[i]+"_f_train"][:10],colors[i]+'-',label='with cycle consistency')
+plt.ylabel('Accuracy')
+plt.xlabel('# Epoch')
+plt.legend()
+fig.savefig('./fig/e6_f.png')  
 plt.close(fig)

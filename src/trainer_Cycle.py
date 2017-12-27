@@ -202,25 +202,25 @@ class Trainer_Cycle(object):
 
         if direction:
             dico=self.src_dico
-            src_emb=self.src_emb
+            emb=self.src_emb
         else:
             dico=self.tgt_dico
-            src_emb=self.tgt_emb
+            emb=self.tgt_emb
         
         ids = torch.LongTensor(bs).random_(len(dico) if mf == 0 else mf)
         
         if self.params.cuda:
             ids = ids.cuda()
 
-        emb = Variable(src_emb(Variable(ids, volatile=True)).data, volatile=volatile)
+        emb_part = Variable(emb(Variable(ids, volatile=True)).data, volatile=volatile)
         
         if self.params.cc_method=='default':
-            emb_cycle = self.mapping(not direction)(self.mapping(direction)(emb))
-            loss = F.l1_loss(emb,emb_cycle)
+            emb_part_cycle = self.mapping(not direction)(self.mapping(direction)(emb))
+            loss = F.l1_loss(emb_part,emb_part_cycle)
 
         else:
-            tgt_emb = src_emb.weight.data
-            src_emb = self.mapping(not direction)(self.mapping(direction)(src_emb.weight)).data
+            tgt_emb = emb.weight.data
+            src_emb = self.mapping(not direction)(self.mapping(direction)(emb.weight)).data
             
             dico = torch.LongTensor(bs, 2)
             dico[:, 0] = ids
@@ -234,7 +234,7 @@ class Trainer_Cycle(object):
             top_matches = scores.topk(1, 1, True)[1][:,0]
             
             print top_matches.size()
-            emb_cycle = Variable(src_emb(Variable(top_matches, volatile=True)).data, volatile=volatile)
+            emb_cycle = Variable(emb(Variable(top_matches, volatile=True)).data, volatile=volatile)
             loss = F.l1_loss(emb,emb_cycle)
 
             # y = torch.FloatTensor(bs).zero_()

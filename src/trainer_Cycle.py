@@ -231,7 +231,7 @@ class Trainer_Cycle(object):
         
             scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
 
-            top_matches = scores.topk(1, 1, True)[1]
+            top_matches = scores.topk(1, 1, True)[1][:,0]
             
             print top_matches.size()
             emb_cycle = Variable(src_emb(Variable(top_matches, volatile=True)).data, volatile=volatile)

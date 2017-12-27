@@ -234,8 +234,8 @@ class Trainer_Cycle(object):
             top_matches = scores.topk(1, 1, True)[1][:,0]
             
             print top_matches.size()
-            emb_cycle = Variable(emb(Variable(top_matches, volatile=True)).data, volatile=volatile)
-            loss = F.l1_loss(emb,emb_cycle)
+            emb_part_cycle = Variable(emb(Variable(top_matches, volatile=True)).data, volatile=volatile)
+            loss = F.l1_loss(emb_part,emb_part_cycle)
 
             # y = torch.FloatTensor(bs).zero_()
             # y[:] = 0

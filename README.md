@@ -28,6 +28,9 @@ pip install visdom
 pip install dominate
 ```
 
+Faiss is optional for GPU users - though Faiss-GPU will greatly speed up nearest neighbor search - and highly recommended for CPU users. Faiss can be installed using "conda install faiss-cpu -c pytorch" or "conda install faiss-gpu -c pytorch"
+
+
 ### (Optional)Multi-threaded GIZA++
 
 ```
@@ -40,7 +43,6 @@ export BINDIR=~/workspace/bin/training-tools
 cp bin/* $BINDIR/mgizapp
 cp scripts/merge_alignment.py $BINDIR
 ```
-
 
 ## Usage
 ```

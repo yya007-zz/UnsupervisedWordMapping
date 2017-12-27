@@ -16,8 +16,7 @@ from torch.nn import functional as F
 from .utils import get_optimizer, export_embeddings
 from .utils import clip_parameters
 from .dico_builder import build_dictionary
-from .evaluation.word_translation import DIC_EVAL_PATH, load_identical_char_dico, load_dictionary
-
+from .evaluation.word_translation import DIC_EVAL_PATH, load_identical_char_dico, load_dictionary, get_word_translation_accuracy, get_word_translation_accuracy_score
 
 logger = getLogger()
 

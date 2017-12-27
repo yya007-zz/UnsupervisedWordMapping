@@ -219,8 +219,9 @@ class Trainer_Cycle(object):
             loss = F.l1_loss(emb,emb_cycle)
 
         else:
-            src_emb = self.mapping(not direction)(self.mapping(direction)(src_emb.weight)).data
             tgt_emb = src_emb.weight.data
+            src_emb = self.mapping(not direction)(self.mapping(direction)(src_emb.weight)).data
+            
             dico = torch.LongTensor(bs, 2)
             dico[:, 0] = ids
             dico[:, 1] = ids

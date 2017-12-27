@@ -214,7 +214,7 @@ class Trainer_Cycle(object):
         emb_part = Variable(emb(Variable(ids, volatile=True)).data, volatile=volatile)
         
         if self.params.cc_method=='default':
-            emb_part_cycle = self.mapping(not direction)(self.mapping(direction)(emb))
+            emb_part_cycle = self.mapping(not direction)(self.mapping(direction)(emb_part))
             loss = F.l1_loss(emb_part,emb_part_cycle)
 
         else:

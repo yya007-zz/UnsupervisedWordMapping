@@ -223,8 +223,8 @@ class Trainer_Cycle(object):
             src_emb = self.mapping(not direction)(self.mapping(direction)(emb.weight)).data
             tgt_emb = emb.weight.data
             dico = torch.LongTensor(bs, 2)
-            dico[i, :] = ids
-            dico[i, :] = ids
+            dico[:, 0] = ids
+            dico[:, 1] = ids
 
             if self.params.cuda:
                 dico = dico.cuda()

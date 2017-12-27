@@ -221,7 +221,7 @@ class Trainer_Cycle(object):
 
         else:
             src_emb = self.mapping(not direction)(self.mapping(direction)(emb.weight)).data
-            tgt_emb = self.emb.weight.data
+            tgt_emb = emb.weight.data
             dico = torch.LongTensor(len(bs), 2)
             dico[i, :] = ids
             dico[i, :] = ids

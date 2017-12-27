@@ -231,12 +231,17 @@ class Trainer_Cycle(object):
 
             if self.params.cuda:
                 dico = dico.cuda()
-            time=time()
+            
+            t1=time.time()
             scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
+            t2=time.time()
+
 
             # indices = scores.topk(1, 1, True)[1][:,0]
             indices = scores.max(1)[1]
+            t3=time.time()
 
+            print(t2-t1,t3-t2)
             emb_part_cycle = Variable(emb(Variable(indices, volatile=True)).data, volatile=volatile)
             loss = F.l1_loss(emb_part,emb_part_cycle)
 

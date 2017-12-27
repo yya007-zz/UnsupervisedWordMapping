@@ -33,7 +33,7 @@ parser.add_argument("--cuda", type=bool_flag, default=True, help="Run on GPU")
 parser.add_argument("--export", type=bool_flag, default=True, help="Export embeddings after training")
 # data
 parser.add_argument("--src_lang", type=str, default='en', help="Source language")
-parser.add_argument("--tgt_lang", type=str, default='es', help="Target language")
+parser.add_argument("--tgt_lang", type=str, default='it', help="Target language")
 parser.add_argument("--emb_dim", type=int, default=300, help="Embedding dimension")
 parser.add_argument("--max_vocab", type=int, default=200000, help="Maximum vocabulary size")
 # mapping if beta is zero, there is no orthogonalization

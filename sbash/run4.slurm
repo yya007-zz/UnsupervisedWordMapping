@@ -10,6 +10,6 @@
 module load Anaconda2
 source activate FCN
 cd /scratch/yaoy4/UnsupervisedWordMapping/
-python unsupervised.py --n_epochs 20 --epoch_size 4000000 --src_lang en --tgt_lang it --src_emb data/pretrained/en.vec --tgt_emb data/pretrained/it.vec --refinement True
+python unsupervised.py --n_epochs 30 --epoch_size 4000000 --src_lang en --tgt_lang it --src_emb data/pretrained/en.vec --tgt_emb data/pretrained/it.vec --refinement True
 # python unsupervised.py --n_epochs 20 --map_optimizer "sgd,lr=0.001" --src_lang en --tgt_lang it --src_emb data/pretrained/en.vec --tgt_emb data/pretrained/it.vec --refinement True
 # python unsupervised.py --n_epochs 20 --map_optimizer "sgd,lr=0.00001" --src_lang en --tgt_lang it --src_emb data/pretrained/en.vec --tgt_emb data/pretrained/it.vec --refinement True

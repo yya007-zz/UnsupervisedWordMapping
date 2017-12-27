@@ -42,6 +42,7 @@ parser.add_argument("--map_beta", type=float, default=0.001, help="Beta for orth
 #Cycle consistency
 parser.add_argument("--lambda_a", type=int, default=10, help="Cycle consistency loss feedback coefficient from src to src")
 parser.add_argument("--lambda_b", type=int, default=10, help="Cycle consistency loss feedback coefficient from tgt to tgt")
+parser.add_argument("--cc_method", type=str, default='default', help="The method to calculate cycle consistency")
 # discriminator
 parser.add_argument("--dis_layers", type=int, default=2, help="Discriminator layers")
 parser.add_argument("--dis_hid_dim", type=int, default=2048, help="Discriminator hidden layer dimensions")
@@ -78,6 +79,7 @@ parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embed
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
 # quick test
 parser.add_argument("--quick_test", type=bool_flag, default=False, help="USE quick test")
+parser.add_argument("--use_dico_train", type=bool_flag, default=False, help="USE dico train")
 
 
 # parse parameters
@@ -192,6 +194,12 @@ if params.quick_test:
     logger.info('\n\n----> THIS IS DEBUGGING MODE <----\n\n')
 else:
     logger.info('\n\n----> THIS IS NOT DEBUGGING MODE <----\n\n')
+
+if params.use_dico_train:
+    # load a training dictionary. if a dictionary path is not provided, use a default
+    # one ("default") or create one based on identical character strings ("identical_char")
+    trainer.load_training_dico(params.dico_train)
+
 """
 Learning loop for Adversarial Training
 """

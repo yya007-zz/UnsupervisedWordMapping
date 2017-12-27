@@ -157,14 +157,6 @@ class Trainer_Cycle(object):
         clip_parameters(self.discriminator(direction), self.params.dis_clip_weights)
 
     def mapping_step(self, stats, direction):
-        # if direction:
-        #     print("----map normal")
-        # else:
-        #     print("----map reverse")
-
-        # print(self.mapping(True).weight.data)
-        # print(self.mapping(False).weight.data)
-
         """
         Fooling discriminator training step.
         """
@@ -203,14 +195,6 @@ class Trainer_Cycle(object):
         self.map_optimizer(direction).step()
         self.orthogonalize(direction)
 
-        # if direction:
-        #     print("----map normal")
-        # else:
-        #     print("----map reverse")
-
-        # print(self.mapping(True).weight.data)
-        # print(self.mapping(False).weight.data)
-
 
     def consistency_loss(self, volatile, direction):
         bs = 2*self.params.batch_size
@@ -229,12 +213,27 @@ class Trainer_Cycle(object):
         if self.params.cuda:
             ids = ids.cuda()
 
-        emb = emb(Variable(ids, volatile=True))
-        emb = Variable(emb.data, volatile=volatile)
-        emb_cycle = self.mapping(direction)(emb)
-        emb_cycle = self.mapping(not direction)(emb_cycle)
-        loss = F.l1_loss(emb,emb_cycle)
+        if self.params.cc_method=='default':
+            emb = emb(Variable(ids, volatile=True))
+            emb = Variable(emb.data, volatile=volatile)
+            emb_cycle = self.mapping(not direction)(self.mapping(direction)(emb))
+            loss = F.l1_loss(emb,emb_cycle)
 
+        else:
+            src_emb = self.mapping(not direction)(self.mapping(direction)(self.emb.weight)).data
+            tgt_emb = self.emb.weight.data
+            dico = torch.LongTensor(len(bs), 2)
+            dico[i, :] = ids
+            dico[i, :] = ids
+
+            if self.params.cuda:
+                dico = dico.cuda()
+        
+            scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
+
+            print scores
+
+            loss=0
         return loss
 
     def load_training_dico(self, dico_train):

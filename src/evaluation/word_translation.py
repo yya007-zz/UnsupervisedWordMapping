@@ -96,6 +96,10 @@ def get_word_translation_accuracy(lang1, word2id1, emb1, lang2, word2id2, emb2, 
     assert dico[:, 0].max() < emb1.size(0)
     assert dico[:, 1].max() < emb2.size(0)
 
+    scores=get_word_translation_accuracy_score(dico, emb1, emb2, method)
+    return get_word_translation_accuracy_score_result(scores)
+
+def get_word_translation_accuracy_score(dico, emb1, emb2, method):
     # normalize word embeddings
     emb1 = emb1 / emb1.norm(2, 1, keepdim=True).expand_as(emb1)
     emb2 = emb2 / emb2.norm(2, 1, keepdim=True).expand_as(emb2)
@@ -135,7 +139,9 @@ def get_word_translation_accuracy(lang1, word2id1, emb1, lang2, word2id2, emb2, 
 
     else:
         raise Exception('Unknown method: "%s"' % method)
+    return scores
 
+def get_word_translation_accuracy_score_result(scores):
     results = []
     top_matches = scores.topk(100, 1, True)[1]
     for k in [1, 5, 10]:

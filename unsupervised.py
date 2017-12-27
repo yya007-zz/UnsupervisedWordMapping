@@ -196,6 +196,7 @@ else:
     logger.info('\n\n----> THIS IS NOT DEBUGGING MODE <----\n\n')
 
 if params.use_dico_train:
+    logger.info('\n\n----> NOT USING FULL EMBEDDINGS <----\n\n')
     # load a training dictionary. if a dictionary path is not provided, use a default
     # one ("default") or create one based on identical character strings ("identical_char")
     trainer.load_training_dico(params.dico_train)

@@ -230,9 +230,21 @@ class Trainer_Cycle(object):
         
             scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
 
-            print scores
+            y = torch.FloatTensor(bs).zero_()
+            y[:] = 0
+            results = []
+            top_matches = scores.topk(100, 1, True)[1]
+            for k in [1]:
+                top_k_matches = top_matches[:, :k]
+                _matching = (top_k_matches == dico[:, 1][:, None].expand_as(top_k_matches)).sum(1)
+                # allow for multiple possible translations
+                matching = {}
+                for i, src_id in enumerate(dico[:, 0]):
+                    matching[src_id] = min(matching.get(src_id, 0) + _matching[i], 1)
+                # evaluate precision@k
+                precision_at_k = list(matching.values())
+                loss = F.l1_loss(y,precision_at_k)
 
-            loss=0
         return loss
 
     def load_training_dico(self, dico_train):

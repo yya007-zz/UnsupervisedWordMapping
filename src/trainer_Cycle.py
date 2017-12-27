@@ -202,25 +202,25 @@ class Trainer_Cycle(object):
 
         if direction:
             dico=self.src_dico
-            emb=self.src_emb
+            src_emb=self.src_emb
         else:
             dico=self.tgt_dico
-            emb=self.tgt_emb
+            src_emb=self.tgt_emb
         
         ids = torch.LongTensor(bs).random_(len(dico) if mf == 0 else mf)
         
         if self.params.cuda:
             ids = ids.cuda()
 
+        emb = Variable(src_emb(Variable(ids, volatile=True)).data, volatile=volatile)
+        
         if self.params.cc_method=='default':
-            emb = emb(Variable(ids, volatile=True))
-            emb = Variable(emb.data, volatile=volatile)
             emb_cycle = self.mapping(not direction)(self.mapping(direction)(emb))
             loss = F.l1_loss(emb,emb_cycle)
 
         else:
-            src_emb = self.mapping(not direction)(self.mapping(direction)(emb.weight)).data
-            tgt_emb = emb.weight.data
+            src_emb = self.mapping(not direction)(self.mapping(direction)(src_emb.weight)).data
+            tgt_emb = src_emb.weight.data
             dico = torch.LongTensor(bs, 2)
             dico[:, 0] = ids
             dico[:, 1] = ids
@@ -230,20 +230,26 @@ class Trainer_Cycle(object):
         
             scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
 
-            y = torch.FloatTensor(bs).zero_()
-            y[:] = 0
-            results = []
-            top_matches = scores.topk(100, 1, True)[1]
-            for k in [1]:
-                top_k_matches = top_matches[:, :k]
-                _matching = (top_k_matches == dico[:, 1][:, None].expand_as(top_k_matches)).sum(1)
-                # allow for multiple possible translations
-                matching = {}
-                for i, src_id in enumerate(dico[:, 0]):
-                    matching[src_id] = min(matching.get(src_id, 0) + _matching[i], 1)
-                # evaluate precision@k
-                precision_at_k = list(matching.values())
-                loss = F.l1_loss(y,precision_at_k)
+            top_matches = scores.topk(1, 1, True)[1]
+            
+            print top_matches.size()
+            emb_cycle = Variable(src_emb(Variable(top_matches, volatile=True)).data, volatile=volatile)
+            loss = F.l1_loss(emb,emb_cycle)
+
+            # y = torch.FloatTensor(bs).zero_()
+            # y[:] = 0
+            # results = []
+            # top_matches = scores.topk(100, 1, True)[1]
+            # for k in [1]:
+            #     top_k_matches = top_matches[:, :k]
+            #     _matching = (top_k_matches == dico[:, 1][:, None].expand_as(top_k_matches)).sum(1)
+            #     # allow for multiple possible translations
+            #     matching = {}
+            #     for i, src_id in enumerate(dico[:, 0]):
+            #         matching[src_id] = min(matching.get(src_id, 0) + _matching[i], 1)
+            #     # evaluate precision@k
+            #     precision_at_k = list(matching.values())
+            #     loss = F.l1_loss(y,precision_at_k)
 
         return loss
 

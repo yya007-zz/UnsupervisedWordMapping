@@ -235,10 +235,13 @@ class Trainer_Cycle(object):
         
             scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
 
-            top_matches = scores.topk(1, 1, True)[1][:,0]
-            
-            emb_part_cycle = Variable(emb(Variable(top_matches, volatile=True)).data, volatile=volatile)
+            # indices = scores.topk(1, 1, True)[1][:,0]
+            indices = scores.max(1)[1]
+
+            emb_part_cycle = Variable(emb(Variable(indices, volatile=True)).data, volatile=volatile)
             loss = F.l1_loss(emb_part,emb_part_cycle)
+
+            
 
             # y = torch.FloatTensor(bs).zero_()
             # y[:] = 0

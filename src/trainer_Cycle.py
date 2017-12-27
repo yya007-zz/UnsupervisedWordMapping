@@ -1,11 +1,10 @@
-# Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
-#
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 #
 
 import os
+import time
+
 from logging import getLogger
 import scipy
 import scipy.linalg
@@ -232,7 +231,7 @@ class Trainer_Cycle(object):
 
             if self.params.cuda:
                 dico = dico.cuda()
-        
+            time=time()
             scores = get_word_translation_accuracy_score(dico, src_emb, tgt_emb, method=self.params.cc_method)
 
             # indices = scores.topk(1, 1, True)[1][:,0]
